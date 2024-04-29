@@ -1,23 +1,25 @@
 package fr.maxlego08.sarah;
 
+import fr.maxlego08.sarah.database.DatabaseType;
+
 /**
  * Represents the configuration for connecting to a database.
  * This record encapsulates the database connection details, including the prefix, username, password, port, host,
  * database name, and debug mode.
  */
 public record DatabaseConfiguration(String tablePrefix, String user, String password, int port, String host,
-                                    String database, boolean debug) {
+                                    String database, boolean debug, DatabaseType databaseType) {
 
-    public static DatabaseConfiguration create(String user, String password, int port, String host, String database) {
-        return new DatabaseConfiguration(null, user, password, port, host, database, false);
+    public static DatabaseConfiguration create(String user, String password, int port, String host, String database, DatabaseType databaseType) {
+        return new DatabaseConfiguration(null, user, password, port, host, database, false, databaseType);
     }
 
-    public static DatabaseConfiguration create(String user, String password, String host, String database) {
-        return new DatabaseConfiguration(null, user, password, 3306, host, database, false);
+    public static DatabaseConfiguration create(String user, String password, String host, String database, DatabaseType databaseType) {
+        return new DatabaseConfiguration(null, user, password, 3306, host, database, false, databaseType);
     }
 
-    public static DatabaseConfiguration create(String user, String password, int port, String host, String database, boolean debug) {
-        return new DatabaseConfiguration(null, user, password, port, host, database, debug);
+    public static DatabaseConfiguration create(String user, String password, int port, String host, String database, boolean debug, DatabaseType databaseType) {
+        return new DatabaseConfiguration(null, user, password, port, host, database, debug, databaseType);
     }
 
     /**
