@@ -22,6 +22,10 @@ public record DatabaseConfiguration(String tablePrefix, String user, String pass
         return new DatabaseConfiguration(null, user, password, port, host, database, debug, databaseType);
     }
 
+    public static DatabaseConfiguration sqlite(boolean debug) {
+        return new DatabaseConfiguration(null, null, null, 0, null, null, debug, DatabaseType.SQLITE);
+    }
+
     /**
      * Replaces the placeholder %prefix% in the given table name with the actual prefix.
      *
