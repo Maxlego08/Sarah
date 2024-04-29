@@ -43,9 +43,9 @@ public class UpdateRequest implements Executor {
         }
 
         this.schema.whereConditions(updateQuery);
-        String upsertQuery = updateQuery.toString();
+        String upsertQuery = databaseConfiguration.replacePrefix(updateQuery.toString());
 
-        if (databaseConfiguration.isDebug()) {
+        if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + upsertQuery);
         }
 

@@ -1,44 +1,33 @@
 package fr.maxlego08.sarah;
 
-public class DatabaseConfiguration {
+/**
+ * Represents the configuration for connecting to a database.
+ * This record encapsulates the database connection details, including the prefix, username, password, port, host,
+ * database name, and debug mode.
+ */
+public record DatabaseConfiguration(String tablePrefix, String user, String password, int port, String host,
+                                    String database, boolean debug) {
 
-    private final String user;
-    private final String password;
-    private final int port;
-    private final String host;
-    private final String database;
-    private final boolean debug;
-
-    public DatabaseConfiguration(String user, String password, int port, String host, String database, boolean debug) {
-        this.user = user;
-        this.password = password;
-        this.port = port;
-        this.host = host;
-        this.database = database;
-        this.debug = debug;
+    public static DatabaseConfiguration create(String user, String password, int port, String host, String database) {
+        return new DatabaseConfiguration(null, user, password, port, host, database, false);
     }
 
-    public String getUser() {
-        return user;
+    public static DatabaseConfiguration create(String user, String password, String host, String database) {
+        return new DatabaseConfiguration(null, user, password, 3306, host, database, false);
     }
 
-    public String getPassword() {
-        return password;
+    public static DatabaseConfiguration create(String user, String password, int port, String host, String database, boolean debug) {
+        return new DatabaseConfiguration(null, user, password, port, host, database, debug);
     }
 
-    public int getPort() {
-        return port;
+    /**
+     * Replaces the placeholder %prefix% in the given table name with the actual prefix.
+     *
+     * @param tableName The table name possibly containing the %prefix% placeholder.
+     * @return The table name with the %prefix% placeholder replaced by the actual prefix.
+     */
+    public String replacePrefix(String tableName) {
+        return this.tablePrefix == null ? tableName : tableName.replaceAll("%prefix%", this.tablePrefix);
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
 }

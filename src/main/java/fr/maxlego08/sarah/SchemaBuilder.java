@@ -302,7 +302,7 @@ public class SchemaBuilder implements Schema {
         this.whereConditions(selectQuery);
 
         String finalQuery = selectQuery.toString();
-        if (databaseConfiguration.isDebug()) {
+        if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
@@ -335,8 +335,8 @@ public class SchemaBuilder implements Schema {
             selectQuery.append(" ").append(this.orderBy);
         }
 
-        String finalQuery = selectQuery.toString();
-        if (databaseConfiguration.isDebug()) {
+        String finalQuery = databaseConfiguration.replacePrefix(selectQuery.toString());
+        if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
