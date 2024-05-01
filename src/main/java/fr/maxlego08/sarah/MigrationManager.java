@@ -82,7 +82,7 @@ public class MigrationManager {
         }
     }
 
-    public void registerMigration(Migration migration) {
+    public static void registerMigration(Migration migration) {
         migrations.add(migration);
     }
 

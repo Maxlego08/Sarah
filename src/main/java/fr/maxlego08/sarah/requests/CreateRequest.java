@@ -42,8 +42,8 @@ public class CreateRequest implements Executor {
 
         createTableSQL.append(")");
 
-        String finalQuery = createTableSQL.toString();
-        if (databaseConfiguration.isDebug()) {
+        String finalQuery = databaseConfiguration.replacePrefix(createTableSQL.toString());
+        if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 

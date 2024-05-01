@@ -39,9 +39,9 @@ public class InsertRequest implements Executor {
 
         insertQuery.append(") ");
         valuesQuery.append(")");
-        String upsertQuery = insertQuery + valuesQuery.toString();
+        String upsertQuery = databaseConfiguration.replacePrefix(insertQuery + valuesQuery.toString());
 
-        if (databaseConfiguration.isDebug()) {
+        if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + upsertQuery);
         }
 

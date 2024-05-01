@@ -40,8 +40,8 @@ public class AlterRequest implements Executor {
             alterTableSQL.append(", ADD ").append(fk);
         }
 
-        String finalQuery = alterTableSQL.toString();
-        if (databaseConfiguration.isDebug()) {
+        String finalQuery = databaseConfiguration.replacePrefix(alterTableSQL.toString());
+        if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
