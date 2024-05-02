@@ -16,7 +16,7 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-        implementation 'com.github.Maxlego08:Sarah:1.0'
+        implementation 'com.github.Maxlego08:Sarah:<version>'
 }
 ```
 
@@ -35,7 +35,7 @@ dependencies {
 <dependency>
     <groupId>com.github.Maxlego08</groupId>
     <artifactId>Sarah</artifactId>
-    <version>1.0</version>
+    <version><version></version>
 </dependency>
 ```
 
