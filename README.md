@@ -12,7 +12,9 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
+```
 
+```gradle
 dependencies {
         implementation 'com.github.Maxlego08:Sarah:1.0'
 }
@@ -21,27 +23,54 @@ dependencies {
 ## Maven
 
 ```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-<dependency>
-    <dependencies>
-        <groupId>com.github.Maxlego08</groupId>
-        <artifactId>Sarah</artifactId>
-        <version>1.0</version>
-    </dependency>
-</dependencies>
+
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
 ```
+
+```xml
+
+<dependency>
+    <groupId>com.github.Maxlego08</groupId>
+    <artifactId>Sarah</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+## How to connect to the database ?
+
+### With MYSQL
+
+````java
+public void connect(){
+    DatabaseConfiguration configuration = DatabaseConfiguration.create(<user>, <password>, <port>, <host>, <database>);
+    DatabaseConnection connection = new MySqlConnection(configuration);
+}
+````
+
+### With SQLITE
+
+````java
+public void connect(){
+    // The boolean allows to enable or not debug requests
+    DatabaseConfiguration configuration = DatabaseConfiguration.sqlite(<boolean>);
+    
+    // The folder will be where the database.db file will be located
+    DatabaseConnection connection = new SqliteConnection(configuration, <folder>);
+}
+````
 
 ## How to create a migration ?
 
-Sarah will create a migrations table (you can change the name with the method `` MigrationManager.setMigrationTableName``).
+Sarah will create a migrations table (you can change the name with the
+method `` MigrationManager.setMigrationTableName``).
 Each migration will be run only once.
 
-Example from [zEssentials](https://github.com/Maxlego08/zEssentials/blob/develop/Essentials/src/main/java/fr/maxlego08/essentials/database/migrations/CreateUserTableMigration.java):
+Example
+from [zEssentials](https://github.com/Maxlego08/zEssentials/blob/develop/Essentials/src/main/java/fr/maxlego08/essentials/database/migrations/CreateUserTableMigration.java):
+
 ````java
 package fr.maxlego08.essentials.database.migrations;
 
@@ -61,6 +90,7 @@ public class CreateUserTableMigration extends Migration {
     }
 }
 ````
+
 You can prefix your tables if you need to.
 
 You must then save your migration with the method ``MigrationManager.registerMigration``

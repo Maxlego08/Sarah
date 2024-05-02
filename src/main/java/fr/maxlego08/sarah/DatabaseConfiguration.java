@@ -14,6 +14,14 @@ public record DatabaseConfiguration(String tablePrefix, String user, String pass
         return new DatabaseConfiguration(null, user, password, port, host, database, false, databaseType);
     }
 
+    public static DatabaseConfiguration create(String user, String password, int port, String host, String database) {
+        return new DatabaseConfiguration(null, user, password, port, host, database, false, DatabaseType.MYSQL);
+    }
+
+    public static DatabaseConfiguration create(String user, String password, int port, String host, String database, boolean debug) {
+        return new DatabaseConfiguration(null, user, password, port, host, database, debug, DatabaseType.MYSQL);
+    }
+
     public static DatabaseConfiguration create(String user, String password, String host, String database, DatabaseType databaseType) {
         return new DatabaseConfiguration(null, user, password, 3306, host, database, false, databaseType);
     }
