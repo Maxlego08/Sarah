@@ -2,6 +2,40 @@
 
 A library to easily manage your database
 
+## Graddle
+
+```gradle
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+        implementation 'com.github.Maxlego08:Sarah:1.0'
+}
+```
+
+## Maven
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+<dependency>
+    <dependencies>
+        <groupId>com.github.Maxlego08</groupId>
+        <artifactId>Sarah</artifactId>
+        <version>1.0</version>
+    </dependency>
+</dependencies>
+```
+
 ## How to create a migration ?
 
 Sarah will create a migrations table (you can change the name with the method `` MigrationManager.setMigrationTableName``).
