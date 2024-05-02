@@ -39,6 +39,29 @@ dependencies {
 </dependency>
 ```
 
+## How to connect to the database ?
+
+### With MYSQL
+
+````java
+public void connect(){
+    DatabaseConfiguration configuration = DatabaseConfiguration.create(<user>, <password>, <port>, <host>, <database>);
+    DatabaseConnection connection = new MySqlConnection(configuration);
+}
+````
+
+### With SQLITE
+
+````java
+public void connect(){
+    // The boolean allows to enable or not debug requests
+    DatabaseConfiguration configuration = DatabaseConfiguration.sqlite(<boolean>);
+    
+    // The folder will be where the database.db file will be located
+    DatabaseConnection connection = new SqliteConnection(configuration, <folder>);
+}
+````
+
 ## How to create a migration ?
 
 Sarah will create a migrations table (you can change the name with the
