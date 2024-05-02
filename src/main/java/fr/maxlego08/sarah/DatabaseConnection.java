@@ -1,42 +1,19 @@
 package fr.maxlego08.sarah;
 
-import fr.maxlego08.sarah.database.DatabaseType;
-
-import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Represents a connection to a MySQL database.
  * This class handles establishing and managing the connection to the database.
  */
-public class DatabaseConnection {
+public abstract class DatabaseConnection {
 
-    private final DatabaseConfiguration databaseConfiguration;
-    private Connection connection;
-    private File folder;
-    private String fileName = "database.db";
+    protected final DatabaseConfiguration databaseConfiguration;
+    protected Connection connection;
 
     public DatabaseConnection(DatabaseConfiguration databaseConfiguration) {
         this.databaseConfiguration = databaseConfiguration;
-    }
-
-    public File getFolder() {
-        return folder;
-    }
-
-    public void setFolder(File folder) {
-        this.folder = folder;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     /**
@@ -63,7 +40,7 @@ public class DatabaseConnection {
 
         if (!isConnected(connection)) {
             try {
-                Connection temp_connection = this.databaseConfiguration.databaseType() == DatabaseType.SQLITE ? this.connectSqlite() : this.connectMySql();
+                Connection temp_connection = this.connectToDatabase();
 
                 if (isConnected(temp_connection)) {
                     temp_connection.close();
@@ -114,34 +91,14 @@ public class DatabaseConnection {
     public void connect() {
         if (!isConnected(connection)) {
             try {
-                connection = this.databaseConfiguration.databaseType() == DatabaseType.SQLITE ? this.connectSqlite() : this.connectMySql();
+                connection = this.connectToDatabase();
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         }
     }
 
-    private Connection connectSqlite() throws Exception {
-
-        if (!this.folder.exists()) {
-            this.folder.mkdirs();
-        }
-
-        File databaseFile = new File(this.folder, "database.db");
-        if (!databaseFile.exists()) {
-            databaseFile.createNewFile();
-        }
-
-        return DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getAbsolutePath());
-    }
-
-    private Connection connectMySql() throws SQLException {
-        Properties properties = new Properties();
-        properties.setProperty("useSSL", "false");
-        properties.setProperty("user", databaseConfiguration.user());
-        properties.setProperty("password", databaseConfiguration.password());
-        return DriverManager.getConnection("jdbc:mysql://" + databaseConfiguration.host() + ":" + databaseConfiguration.port() + "/" + databaseConfiguration.database(), properties);
-    }
+    public abstract Connection connectToDatabase() throws Exception;
 
     /**
      * Gets the connection to the database.
