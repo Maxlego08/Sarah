@@ -1,9 +1,9 @@
 package fr.maxlego08.sarah.requests;
 
+import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.database.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
-import fr.maxlego08.sarah.DatabaseConfiguration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,7 +33,7 @@ public class CreateRequest implements Executor {
         createTableSQL.append(String.join(", ", columnSQLs));
 
         if (!this.schema.getPrimaryKeys().isEmpty()) {
-            createTableSQL.append(", PRIMARY KEY (").append(String.join(", ", this.schema.getPrimaryKeys())).append(")");
+            createTableSQL.append(", PRIMARY KEY (").append(String.join(", ", "`" + this.schema.getPrimaryKeys() + "`")).append(")");
         }
 
         for (String fk : this.schema.getForeignKeys()) {
