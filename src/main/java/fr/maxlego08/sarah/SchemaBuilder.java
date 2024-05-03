@@ -387,7 +387,6 @@ public class SchemaBuilder implements Schema {
             for (int i = 0; i < parameters.length; i++) {
                 Parameter parameter = parameters[i];
                 params[i] = convertToRequiredType(row.get(parameter.getName()), parameter.getType());
-                System.out.println(parameter.getName() + " - " + parameter.getType() + " => " + params[i]);
             }
             T instance = (T) firstConstructor.newInstance(params);
             transformedResults.add(instance);
