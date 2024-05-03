@@ -387,6 +387,7 @@ public class SchemaBuilder implements Schema {
             for (int i = 0; i < parameters.length; i++) {
                 Parameter parameter = parameters[i];
                 params[i] = convertToRequiredType(row.get(parameter.getName()), parameter.getType());
+                System.out.println(parameter.getName() + " - " + parameter.getType() + " => " + params[i]);
             }
             T instance = (T) firstConstructor.newInstance(params);
             transformedResults.add(instance);
@@ -403,6 +404,12 @@ public class SchemaBuilder implements Schema {
             return new BigDecimal(value.toString());
         } else if (type == UUID.class) {
             return UUID.fromString((String) value);
+        } else if (type == Long.class || type == long.class) {
+            return ((Number) value).longValue();
+        } else if (type == Double.class || type == double.class) {
+            return ((Number) value).doubleValue();
+        } else if (type == Integer.class || type == int.class) {
+            return ((Number) value).intValue();
         } else {
             return value;
         }
