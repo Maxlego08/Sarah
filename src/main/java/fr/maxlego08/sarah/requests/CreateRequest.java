@@ -33,7 +33,7 @@ public class CreateRequest implements Executor {
         createTableSQL.append(String.join(", ", columnSQLs));
 
         if (!this.schema.getPrimaryKeys().isEmpty()) {
-            createTableSQL.append(", PRIMARY KEY (`").append(String.join("`, `", this.schema.getPrimaryKeys())).append("`)");
+            createTableSQL.append(", PRIMARY KEY (").append(String.join(", ", this.schema.getPrimaryKeys()));
         }
 
         for (String fk : this.schema.getForeignKeys()) {
