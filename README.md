@@ -1,4 +1,4 @@
-# Sarah - Java ORM
+# Sarah
 
 A library to easily manage your database
 
@@ -101,7 +101,7 @@ This method takes as parameter a SQL Java `Connection`, `DatabaseConfiguration` 
 
 ## How to create SQL queries ?
 
-The `RequestHelper` class simplifies queries, but you won’t be able to handle errors. To start using Sarah sa will be
+The `RequestHelper` class simplifies queries, but you wonâ€™t be able to handle errors. To start using Sarah sa will be
 enough. But if you need more control, just take the code from the `RequestHelper` class.
 
 The following examples are from [zAuctionHouse Stats](https://github.com/Maxlego08/zAuctionHouse-Stats).
