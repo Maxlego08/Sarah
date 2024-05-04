@@ -35,7 +35,8 @@ dependencies {
 <dependency>
     <groupId>com.github.Maxlego08</groupId>
     <artifactId>Sarah</artifactId>
-    <version><version></version>
+    <version>
+    <version></version>
 </dependency>
 ```
 
@@ -45,21 +46,21 @@ dependencies {
 
 ````java
 public void connect(){
-    DatabaseConfiguration configuration = DatabaseConfiguration.create(<user>, <password>, <port>, <host>, <database>);
-    DatabaseConnection connection = new MySqlConnection(configuration);
-}
+        DatabaseConfiguration configuration=DatabaseConfiguration.create(<user>,<password>,<port>,<host>,<database>);
+        DatabaseConnection connection=new MySqlConnection(configuration);
+        }
 ````
 
 ### With SQLITE
 
 ````java
 public void connect(){
-    // The boolean allows to enable or not debug requests
-    DatabaseConfiguration configuration = DatabaseConfiguration.sqlite(<boolean>);
-    
-    // The folder will be where the database.db file will be located
-    DatabaseConnection connection = new SqliteConnection(configuration, <folder>);
-}
+        // The boolean allows to enable or not debug requests
+        DatabaseConfiguration configuration=DatabaseConfiguration.sqlite(<boolean>);
+
+        // The folder will be where the database.db file will be located
+        DatabaseConnection connection=new SqliteConnection(configuration,<folder>);
+        }
 ````
 
 ## How to create a migration ?
@@ -97,3 +98,88 @@ You must then save your migration with the method ``MigrationManager.registerMig
 
 After saving all your migrations, you must run them with the method ``MigrationManager.execute``
 This method takes as parameter a SQL Java `Connection`, `DatabaseConfiguration` and a `Logger`
+
+## How to create SQL queries ?
+
+The `RequestHelper` class simplifies queries, but you won’t be able to handle errors. To start using Sarah sa will be
+enough. But if you need more control, just take the code from the `RequestHelper` class.
+
+The following examples are from [zAuctionHouse Stats](https://github.com/Maxlego08/zAuctionHouse-Stats).
+
+### Upsert
+
+Allows to update the database by making an `INSERT` followed by an `ON DUPLICATE KEY UPDATE.`
+
+````java
+public void upsert(GlobalKey key, GlobalValue value) {
+    ZPlugin.service.execute(() -> {
+        this.requestHelper.upsert("zah_stats_global", table -> {
+            table.string("key", key.name());
+            table.object("value", value.getValue());
+        });
+    });
+}
+````
+
+### Insert
+
+Allows you to create an insert
+
+````java
+public void insertItemPurchased(PlayerItemPurchased item) {
+    ZPlugin.service.execute(() -> {
+        this.requestHelper.insert("zah_player_purchased_items", table -> {
+            table.uuid("player_id", item.getPlayerId());
+            table.string("player_name", item.getPlayerName());
+            table.string("itemstack", item.getItemStack());
+            table.bigInt("price", item.getPrice());
+            table.string("economy", item.getEconomy());
+            table.uuid("seller_id", item.getSellerId());
+            table.string("seller_name", item.getSellerName());
+            table.bigInt("purchase_time", System.currentTimeMillis());
+            table.string("auction_type", item.getAuctionType().name());
+        });
+    });
+}
+````
+
+### Select
+
+This example retrieves all the data from the table and transforms the result into a map
+
+````java
+public Map<UUID, List<PlayerItemPurchased>> selectAll() throws SQLException {
+    return this.requestHelper.selectAll("zah_player_purchased_items", PlayerItemPurchasedDTO.class).stream().map(PlayerItemPurchased::new).collect(Collectors.groupingBy(PlayerItemPurchased::getPlayerId));
+}
+````
+
+Here is another example with a where and an order by
+````java
+public List<ChatMessageDTO> getMessages(UUID uuid) {
+    return requestHelper.select("chat_message", ChatMessageDTO.class, table -> {
+        table.uuid("unique_id", uuid);
+        table.orderByDesc("created_at");
+    });
+}
+````
+
+You must create an object with a constructor that will have a constructor with the name and each column
+````java
+package fr.maxlego08.stats.dto;
+
+import fr.maxlego08.zauctionhouse.api.enums.AuctionType;
+
+import java.util.UUID;
+
+public record PlayerItemPurchasedDTO(long id, 
+                                     UUID player_id,
+                                     String player_name,
+                                     String itemStack, 
+                                     long price,
+                                     String economy,
+                                     UUID seller_id, 
+                                     String seller_name,
+                                     long purchase_time,
+                                     AuctionType auction_type
+) { }
+````
