@@ -168,8 +168,12 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema date(String columnName, Date value) {
-        // return this.addColumn(new ColumnDefinition(columnName).setObject(new java.sql.Date(value.getTime())));
         return this.addColumn(new ColumnDefinition(columnName).setObject(value));
+    }
+
+    @Override
+    public Schema object(String columnName, Object object) {
+        return this.addColumn(new ColumnDefinition(columnName).setObject(object));
     }
 
     @Override
