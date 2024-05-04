@@ -206,7 +206,7 @@ public class SchemaBuilder implements Schema {
         if (this.columns.isEmpty()) throw new IllegalStateException("No column defined to apply foreign key.");
         ColumnDefinition lastColumn = this.columns.get(this.columns.size() - 1);
 
-        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE CASCADE", lastColumn.getName(), referenceTable, lastColumn.getName());
+        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE CASCADE", lastColumn.getSafeName(), referenceTable, lastColumn.getSafeName());
         this.foreignKeys.add(fkDefinition);
         return this;
     }
@@ -216,7 +216,7 @@ public class SchemaBuilder implements Schema {
         if (this.columns.isEmpty()) throw new IllegalStateException("No column defined to apply foreign key.");
         ColumnDefinition lastColumn = this.columns.get(this.columns.size() - 1);
 
-        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s)%s", lastColumn.getName(), referenceTable, columnName, onCascade ? " ON DELETE CASCADE" : "");
+        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s)%s", lastColumn.getSafeName(), referenceTable, columnName, onCascade ? " ON DELETE CASCADE" : "");
         this.foreignKeys.add(fkDefinition);
         return this;
     }
@@ -263,7 +263,7 @@ public class SchemaBuilder implements Schema {
     public Schema primary() {
         ColumnDefinition lastColumn = getLastColumn();
         lastColumn.setPrimaryKey(true);
-        primaryKeys.add(lastColumn.getName());
+        primaryKeys.add(lastColumn.getSafeName());
         return this;
     }
 

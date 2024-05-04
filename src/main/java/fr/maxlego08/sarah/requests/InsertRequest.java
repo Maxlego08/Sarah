@@ -32,7 +32,7 @@ public class InsertRequest implements Executor {
 
         for (int i = 0; i < this.schema.getColumns().size(); i++) {
             ColumnDefinition columnDefinition = this.schema.getColumns().get(i);
-            insertQuery.append(i > 0 ? ", " : "").append(columnDefinition.getName());
+            insertQuery.append(i > 0 ? ", " : "").append(columnDefinition.getSafeName());
             valuesQuery.append(i > 0 ? ", " : "").append("?");
             values.add(columnDefinition.getObject());
         }

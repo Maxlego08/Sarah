@@ -56,6 +56,10 @@ public class ColumnDefinition {
         this.name = name;
     }
 
+    public String getSafeName() {
+        return String.format("`%s`", this.name);
+    }
+
     public String getType() {
         return type;
     }
