@@ -168,8 +168,12 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema date(String columnName, Date value) {
-        // return this.addColumn(new ColumnDefinition(columnName).setObject(new java.sql.Date(value.getTime())));
         return this.addColumn(new ColumnDefinition(columnName).setObject(value));
+    }
+
+    @Override
+    public Schema object(String columnName, Object object) {
+        return this.addColumn(new ColumnDefinition(columnName).setObject(object));
     }
 
     @Override
@@ -202,7 +206,7 @@ public class SchemaBuilder implements Schema {
         if (this.columns.isEmpty()) throw new IllegalStateException("No column defined to apply foreign key.");
         ColumnDefinition lastColumn = this.columns.get(this.columns.size() - 1);
 
-        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE CASCADE", lastColumn.getName(), referenceTable, lastColumn.getName());
+        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE CASCADE", lastColumn.getSafeName(), referenceTable, lastColumn.getSafeName());
         this.foreignKeys.add(fkDefinition);
         return this;
     }
@@ -212,7 +216,7 @@ public class SchemaBuilder implements Schema {
         if (this.columns.isEmpty()) throw new IllegalStateException("No column defined to apply foreign key.");
         ColumnDefinition lastColumn = this.columns.get(this.columns.size() - 1);
 
-        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s)%s", lastColumn.getName(), referenceTable, columnName, onCascade ? " ON DELETE CASCADE" : "");
+        String fkDefinition = String.format("FOREIGN KEY (%s) REFERENCES %s(%s)%s", lastColumn.getSafeName(), referenceTable, columnName, onCascade ? " ON DELETE CASCADE" : "");
         this.foreignKeys.add(fkDefinition);
         return this;
     }
@@ -232,7 +236,7 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema autoIncrement(String columnName) {
-        return addColumn(new ColumnDefinition(columnName, "INT").setAutoIncrement(true));
+        return addColumn(new ColumnDefinition(columnName, "BIGINT").setAutoIncrement(true)).primary();
     }
 
     @Override
@@ -259,7 +263,7 @@ public class SchemaBuilder implements Schema {
     public Schema primary() {
         ColumnDefinition lastColumn = getLastColumn();
         lastColumn.setPrimaryKey(true);
-        primaryKeys.add(lastColumn.getName());
+        primaryKeys.add(lastColumn.getSafeName());
         return this;
     }
 
@@ -403,6 +407,12 @@ public class SchemaBuilder implements Schema {
             return new BigDecimal(value.toString());
         } else if (type == UUID.class) {
             return UUID.fromString((String) value);
+        } else if (type == Long.class || type == long.class) {
+            return ((Number) value).longValue();
+        } else if (type == Double.class || type == double.class) {
+            return ((Number) value).doubleValue();
+        } else if (type == Integer.class || type == int.class) {
+            return ((Number) value).intValue();
         } else {
             return value;
         }

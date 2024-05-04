@@ -23,7 +23,7 @@ public class ColumnDefinition {
     }
 
     public String build() {
-        StringBuilder columnSQL = new StringBuilder(name + " " + type);
+        StringBuilder columnSQL = new StringBuilder("`" + name + "` " + type);
 
         if (length != 0 && decimal != 0) {
             columnSQL.append("(").append(length).append(",").append(decimal).append(")");
@@ -54,6 +54,10 @@ public class ColumnDefinition {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSafeName() {
+        return String.format("`%s`", this.name);
     }
 
     public String getType() {

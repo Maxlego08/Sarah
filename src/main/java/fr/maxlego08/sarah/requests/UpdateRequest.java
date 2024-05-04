@@ -38,7 +38,7 @@ public class UpdateRequest implements Executor {
 
         for (int i = 0; i < this.schema.getColumns().size(); i++) {
             ColumnDefinition columnDefinition = this.schema.getColumns().get(i);
-            updateQuery.append(i > 0 ? ", " : "").append(columnDefinition.getName()).append(" = ?");
+            updateQuery.append(i > 0 ? ", " : "").append(columnDefinition.getSafeName()).append(" = ?");
             values.add(columnDefinition.getObject());
         }
 

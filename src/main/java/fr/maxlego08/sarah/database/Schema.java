@@ -42,6 +42,8 @@ public interface Schema {
 
     Schema bigInt(String columnName, long value);
 
+    Schema object(String columnName, Object object);
+
     Schema bool(String columnName);
 
     Schema bool(String columnName, boolean value);

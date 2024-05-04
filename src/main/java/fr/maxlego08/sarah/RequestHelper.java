@@ -69,6 +69,16 @@ public class RequestHelper {
         return new ArrayList<>();
     }
 
+    public <T> List<T> selectAll(String tableName, Class<T> clazz) {
+        Schema schema = SchemaBuilder.select(tableName);
+        try {
+            return schema.executeSelect(clazz, this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     public void delete(String tableName, Consumer<Schema> consumer) {
         Schema schema = SchemaBuilder.delete(tableName);
         consumer.accept(schema);

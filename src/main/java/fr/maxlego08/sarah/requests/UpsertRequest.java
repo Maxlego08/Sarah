@@ -1,9 +1,9 @@
 package fr.maxlego08.sarah.requests;
 
+import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.database.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
-import fr.maxlego08.sarah.DatabaseConfiguration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,9 +31,9 @@ public class UpsertRequest implements Executor {
 
         for (int i = 0; i < this.schema.getColumns().size(); i++) {
             ColumnDefinition columnDefinition = this.schema.getColumns().get(i);
-            insertQuery.append(i > 0 ? ", " : "").append(columnDefinition.getName());
+            insertQuery.append(i > 0 ? ", " : "").append(columnDefinition.getSafeName());
             valuesQuery.append(i > 0 ? ", " : "").append("?");
-            onUpdateQuery.append(i > 0 ? ", " : "").append(columnDefinition.getName()).append(" = VALUES(").append(columnDefinition.getName()).append(")");
+            onUpdateQuery.append(i > 0 ? ", " : "").append(columnDefinition.getSafeName()).append(" = VALUES(").append(columnDefinition.getSafeName()).append(")");
             values.add(columnDefinition.getObject());
         }
 
