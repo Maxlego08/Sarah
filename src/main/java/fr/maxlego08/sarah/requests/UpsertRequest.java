@@ -2,6 +2,7 @@ package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
 
@@ -25,7 +26,7 @@ public class UpsertRequest implements Executor {
 
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
-        StringBuilder onUpdateQuery = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
+        StringBuilder onUpdateQuery = new StringBuilder();
 
         List<Object> values = new ArrayList<>();
 
@@ -33,13 +34,31 @@ public class UpsertRequest implements Executor {
             ColumnDefinition columnDefinition = this.schema.getColumns().get(i);
             insertQuery.append(i > 0 ? ", " : "").append(columnDefinition.getSafeName());
             valuesQuery.append(i > 0 ? ", " : "").append("?");
-            onUpdateQuery.append(i > 0 ? ", " : "").append(columnDefinition.getSafeName()).append(" = VALUES(").append(columnDefinition.getSafeName()).append(")");
+            if (i > 0) {
+                onUpdateQuery.append(", ");
+            }
+            onUpdateQuery.append(columnDefinition.getSafeName()).append(" = ?");
             values.add(columnDefinition.getObject());
         }
 
         insertQuery.append(") ");
         valuesQuery.append(")");
-        String upsertQuery = databaseConfiguration.replacePrefix(insertQuery + valuesQuery.toString() + onUpdateQuery);
+
+        DatabaseType databaseType = databaseConfiguration.databaseType();
+        String upsertQuery;
+
+        if (databaseType == DatabaseType.SQLITE) {
+            StringBuilder onConflictQuery = new StringBuilder(" ON CONFLICT (");
+            List<String> primaryKeys = schema.getPrimaryKeys();
+            for (int i = 0; i < primaryKeys.size(); i++) {
+                onConflictQuery.append(i > 0 ? ", " : "").append("`").append(primaryKeys.get(i)).append("`");
+            }
+            onConflictQuery.append(") DO UPDATE SET ");
+            upsertQuery = insertQuery + valuesQuery.toString() + onConflictQuery.toString() + onUpdateQuery.toString();
+        } else {
+            onUpdateQuery.insert(0, " ON DUPLICATE KEY UPDATE ");
+            upsertQuery = insertQuery + valuesQuery.toString() + onUpdateQuery.toString();
+        }
 
         if (databaseConfiguration.debug()) {
             logger.info("Executing SQL: " + upsertQuery);
@@ -48,6 +67,9 @@ public class UpsertRequest implements Executor {
         try (PreparedStatement preparedStatement = connection.prepareStatement(upsertQuery)) {
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i + 1, values.get(i));
+            }
+            for (int i = 0; i < values.size(); i++) {
+                preparedStatement.setObject(i + 1 + values.size(), values.get(i));
             }
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
