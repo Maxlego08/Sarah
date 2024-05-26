@@ -53,7 +53,8 @@ public class UpsertRequest implements Executor {
             StringBuilder onConflictQuery = new StringBuilder(" ON CONFLICT (");
             List<String> primaryKeys = schema.getPrimaryKeys();
             for (int i = 0; i < primaryKeys.size(); i++) {
-                onConflictQuery.append(i > 0 ? ", " : "").append("`").append(primaryKeys.get(i)).append("`");
+                System.out.println(primaryKeys.get(i));
+                onConflictQuery.append(i > 0 ? ", " : "").append(primaryKeys.get(i));
             }
             onConflictQuery.append(") DO UPDATE SET ");
             upsertQuery = insertQuery + valuesQuery.toString() + onConflictQuery.toString() + onUpdateQuery.toString();
