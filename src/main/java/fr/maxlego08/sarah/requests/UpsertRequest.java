@@ -45,9 +45,11 @@ public class UpsertRequest implements Executor {
         valuesQuery.append(")");
 
         DatabaseType databaseType = databaseConfiguration.databaseType();
+        String dbProductName = connection.getMetaData().getDatabaseProductName().toLowerCase();
+        System.out.println(databaseType + " - " + dbProductName + "--" + dbProductName.contains("sqlite"));
         String upsertQuery;
 
-        if (databaseType == DatabaseType.SQLITE) {
+        if (dbProductName.contains("sqlite")) {
             StringBuilder onConflictQuery = new StringBuilder(" ON CONFLICT (");
             List<String> primaryKeys = schema.getPrimaryKeys();
             for (int i = 0; i < primaryKeys.size(); i++) {
