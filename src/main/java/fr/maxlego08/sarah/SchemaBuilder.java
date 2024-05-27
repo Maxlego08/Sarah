@@ -6,6 +6,7 @@ import fr.maxlego08.sarah.database.JoinCondition;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.database.SchemaType;
+import fr.maxlego08.sarah.database.SelectDefinition;
 import fr.maxlego08.sarah.requests.AlterRequest;
 import fr.maxlego08.sarah.requests.CreateRequest;
 import fr.maxlego08.sarah.requests.DeleteRequest;
@@ -38,6 +39,7 @@ public class SchemaBuilder implements Schema {
     private final List<String> foreignKeys = new ArrayList<>();
     private final List<WhereCondition> whereConditions = new ArrayList<>();
     private final List<JoinCondition> joinConditions = new ArrayList<>();
+    private final List<SelectDefinition> selectColumns = new ArrayList<>();
     private String orderBy;
     private Migration migration;
     private boolean isDistinct;
@@ -326,7 +328,13 @@ public class SchemaBuilder implements Schema {
     @Override
     public List<Map<String, Object>> executeSelect(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
         List<Map<String, Object>> results = new ArrayList<>();
-        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + ".* FROM " + this.tableName) : new StringBuilder("SELECT * FROM " + this.tableName);
+
+        String selectedValues = "*";
+        if (!this.selectColumns.isEmpty()) {
+            selectedValues = String.join(",", this.selectColumns.stream().map(SelectDefinition::getSelectColumn).toList());
+        }
+
+        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + "." + selectedValues + " FROM " + this.tableName) : new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
 
         if (!this.joinConditions.isEmpty()) {
             for (JoinCondition join : this.joinConditions) {
@@ -491,4 +499,13 @@ public class SchemaBuilder implements Schema {
         return executor.execute(connection, databaseConfiguration, logger);
     }
 
+    @Override
+    public void addSelect(String selectedColumn) {
+        this.selectColumns.add(new SelectDefinition(null, selectedColumn));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn) {
+        this.selectColumns.add(new SelectDefinition(prefix, selectedColumn));
+    }
 }

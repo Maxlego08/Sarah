@@ -114,5 +114,9 @@ public interface Schema {
     void distinct();
 
     boolean isDistinct();
+
+    void addSelect(String selectedColumn);
+
+    void addSelect(String prefix, String selectedColumn);
 }
 
