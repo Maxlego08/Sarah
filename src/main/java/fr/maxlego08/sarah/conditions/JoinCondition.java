@@ -19,8 +19,8 @@ public class JoinCondition {
         this.additionalCondition = additionalCondition;
     }
 
-    public static JoinCondition and(String primaryTable, String primaryTableAlias, String primaryColumn, String foreignTable, String foreignColumn) {
-        return new JoinCondition(null, primaryTable, primaryTableAlias, primaryColumn, foreignTable, foreignColumn, null);
+    public static JoinCondition and(String primaryTableAlias, String primaryColumn, String foreignColumn) {
+        return new JoinCondition(null, null, primaryTableAlias, primaryColumn, null, foreignColumn, null);
     }
 
     public String getJoinClause() {
@@ -37,7 +37,7 @@ public class JoinCondition {
     }
 
     private String getCondition() {
-        return this.primaryTableAlias + "." + this.primaryColumn + " = " + this.foreignTable + "." + this.foreignColumn;
+        return this.primaryTableAlias + "." + this.primaryColumn + " = " + this.foreignColumn;
     }
 
     public enum JoinType {
