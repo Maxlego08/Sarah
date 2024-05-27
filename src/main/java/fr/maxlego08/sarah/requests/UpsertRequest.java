@@ -1,7 +1,7 @@
 package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
-import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
