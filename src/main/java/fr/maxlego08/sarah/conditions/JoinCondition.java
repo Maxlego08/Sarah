@@ -37,7 +37,7 @@ public class JoinCondition {
     }
 
     private String getCondition() {
-        return this.primaryTableAlias + "." + this.primaryColumn + " = " + this.foreignColumn;
+        return this.primaryTableAlias + "." + this.primaryColumn + " = '" + this.foreignColumn + "'";
     }
 
     public enum JoinType {
