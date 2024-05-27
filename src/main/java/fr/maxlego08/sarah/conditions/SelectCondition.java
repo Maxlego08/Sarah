@@ -4,9 +4,10 @@ public record SelectCondition(String tablePrefix, String column, String aliases,
                               Object defaultValue) {
 
     public String getSelectColumn() {
-        String result = this.tablePrefix == null ? this.getColumnAndAliases() : this.tablePrefix + this.getColumnAndAliases();
+        String result = this.tablePrefix == null ? this.getColumnAndAliases() : this.tablePrefix + "." + this.getColumnAndAliases();
         if (isCoalesce) {
-            return "COALESCE(" + result + ", " + defaultValue + ")" + getAliases();
+            String tableName = this.tablePrefix == null ? "`" + this.column + "`" : this.tablePrefix + ".`" + this.column + "`";
+            return "COALESCE(" + tableName + ", " + defaultValue + ")" + getAliases();
         }
         return result;
     }
