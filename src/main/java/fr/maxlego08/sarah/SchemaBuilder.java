@@ -13,7 +13,12 @@ import fr.maxlego08.sarah.requests.InsertRequest;
 import fr.maxlego08.sarah.requests.UpdateRequest;
 import fr.maxlego08.sarah.requests.UpsertRequest;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.math.BigDecimal;
@@ -441,7 +446,7 @@ public class SchemaBuilder implements Schema {
         }
     }
 
-    private byte[] serializeObject(Object object) throws IOException {
+    protected byte[] serializeObject(Object object) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(object);
