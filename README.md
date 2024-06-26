@@ -45,22 +45,22 @@ dependencies {
 ### With MYSQL
 
 ````java
-public void connect(){
-        DatabaseConfiguration configuration=DatabaseConfiguration.create(<user>,<password>,<port>,<host>,<database>);
-        DatabaseConnection connection=new MySqlConnection(configuration);
-        }
+public void connect() {
+    DatabaseConfiguration configuration=DatabaseConfiguration.create(<user>,<password>,<port>,<host>,<database>);
+    DatabaseConnection connection=new MySqlConnection(configuration);
+}
 ````
 
 ### With SQLITE
 
 ````java
-public void connect(){
-        // The boolean allows to enable or not debug requests
-        DatabaseConfiguration configuration=DatabaseConfiguration.sqlite(<boolean>);
-
-        // The folder will be where the database.db file will be located
-        DatabaseConnection connection=new SqliteConnection(configuration,<folder>);
-        }
+public void connect() {
+    // The boolean allows to enable or not debug requests
+    DatabaseConfiguration configuration=DatabaseConfiguration.sqlite(<boolean>);
+    
+    // The folder will be where the database.db file will be located
+    DatabaseConnection connection=new SqliteConnection(configuration,<folder>);
+}
 ````
 
 ## How to create a migration ?
@@ -81,7 +81,7 @@ import fr.maxlego08.sarah.database.Migration;
 public class CreateUserTableMigration extends Migration {
     @Override
     public void up() {
-        SchemaBuilder.create(this, "%prefix%users", table -> {
+        create("%prefix%users", table -> {
             table.uuid("unique_id").primary();
             table.string("name", 16);
             table.text("last_location").nullable();
@@ -112,7 +112,7 @@ Allows to update the database by making an `INSERT` followed by an `ON DUPLICATE
 
 ````java
 public void upsert(GlobalKey key, GlobalValue value) {
-    ZPlugin.service.execute(() -> {
+    ZPlugin.service.execute(() -> { 
         this.requestHelper.upsert("zah_stats_global", table -> {
             table.string("key", key.name());
             table.object("value", value.getValue());
