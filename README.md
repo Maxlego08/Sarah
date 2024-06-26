@@ -120,6 +120,18 @@ public void upsert(GlobalKey key, GlobalValue value) {
     });
 }
 ````
+Attention, if you are in SQLite, you need define primary keys with the method ``.primary()``
+The example above will therefore become for SQLite:
+````java
+public void upsert(GlobalKey key, GlobalValue value) {
+    ZPlugin.service.execute(() -> { 
+        this.requestHelper.upsert("zah_stats_global", table -> {
+            table.string("key", key.name()).primary();
+            table.object("value", value.getValue());
+        });
+    });
+}
+````
 
 ### Insert
 
