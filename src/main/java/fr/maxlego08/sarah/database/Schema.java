@@ -1,6 +1,8 @@
 package fr.maxlego08.sarah.database;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.JoinCondition;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -79,6 +81,14 @@ public interface Schema {
 
     Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
 
+    Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn, JoinCondition andCondition);
+
+    Schema rightJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
+
+    Schema innerJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
+
+    Schema fullJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
+
     // Execution methods
     int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException;
 
@@ -114,5 +124,13 @@ public interface Schema {
     void distinct();
 
     boolean isDistinct();
+
+    void addSelect(String selectedColumn);
+
+    void addSelect(String prefix, String selectedColumn);
+    
+    void addSelect(String prefix, String selectedColumn, String aliases);
+
+    void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue);
 }
 

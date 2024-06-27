@@ -1,7 +1,7 @@
 package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
-import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
@@ -54,10 +54,10 @@ public class UpsertRequest implements Executor {
                 onConflictQuery.append(i > 0 ? ", " : "").append(primaryKeys.get(i));
             }
             onConflictQuery.append(") DO UPDATE SET ");
-            upsertQuery = insertQuery + valuesQuery.toString() + onConflictQuery.toString() + onUpdateQuery.toString();
+            upsertQuery = insertQuery + valuesQuery.toString() + onConflictQuery + onUpdateQuery;
         } else {
             onUpdateQuery.insert(0, " ON DUPLICATE KEY UPDATE ");
-            upsertQuery = insertQuery + valuesQuery.toString() + onUpdateQuery.toString();
+            upsertQuery = insertQuery + valuesQuery.toString() + onUpdateQuery;
         }
 
         if (databaseConfiguration.debug()) {

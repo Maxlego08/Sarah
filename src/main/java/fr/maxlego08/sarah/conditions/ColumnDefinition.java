@@ -1,4 +1,4 @@
-package fr.maxlego08.sarah.database;
+package fr.maxlego08.sarah.conditions;
 
 public class ColumnDefinition {
     private String name;

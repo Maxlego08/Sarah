@@ -1,8 +1,10 @@
 package fr.maxlego08.sarah;
 
-import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.JoinCondition;
+import fr.maxlego08.sarah.conditions.SelectCondition;
+import fr.maxlego08.sarah.conditions.WhereCondition;
 import fr.maxlego08.sarah.database.Executor;
-import fr.maxlego08.sarah.database.JoinCondition;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.database.SchemaType;
@@ -38,6 +40,7 @@ public class SchemaBuilder implements Schema {
     private final List<String> foreignKeys = new ArrayList<>();
     private final List<WhereCondition> whereConditions = new ArrayList<>();
     private final List<JoinCondition> joinConditions = new ArrayList<>();
+    private final List<SelectCondition> selectColumns = new ArrayList<>();
     private String orderBy;
     private Migration migration;
     private boolean isDistinct;
@@ -326,7 +329,13 @@ public class SchemaBuilder implements Schema {
     @Override
     public List<Map<String, Object>> executeSelect(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
         List<Map<String, Object>> results = new ArrayList<>();
-        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + ".* FROM " + this.tableName) : new StringBuilder("SELECT * FROM " + this.tableName);
+
+        String selectedValues = "*";
+        if (!this.selectColumns.isEmpty()) {
+            selectedValues = String.join(",", this.selectColumns.stream().map(SelectCondition::getSelectColumn).toList());
+        }
+
+        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + "." + selectedValues + " FROM " + this.tableName) : new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
 
         if (!this.joinConditions.isEmpty()) {
             for (JoinCondition join : this.joinConditions) {
@@ -424,8 +433,32 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public Schema leftJoin(String primaryTable, String primaryTableAlias, String primaryColumn, String foreignTable, String foreignColumn) {
-        joinConditions.add(new JoinCondition(primaryTable, primaryTableAlias, primaryColumn, foreignTable, foreignColumn));
+    public Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.LEFT, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
+        return this;
+    }
+
+    @Override
+    public Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn, JoinCondition andCondition) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.LEFT, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, andCondition));
+        return this;
+    }
+
+    @Override
+    public Schema rightJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.RIGHT, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
+        return this;
+    }
+
+    @Override
+    public Schema innerJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.INNER, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
+        return this;
+    }
+
+    @Override
+    public Schema fullJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.FULL, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
         return this;
     }
 
@@ -491,4 +524,23 @@ public class SchemaBuilder implements Schema {
         return executor.execute(connection, databaseConfiguration, logger);
     }
 
+    @Override
+    public void addSelect(String selectedColumn) {
+        this.selectColumns.add(new SelectCondition(null, selectedColumn, null, false, null));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn) {
+        this.selectColumns.add(new SelectCondition(prefix, selectedColumn, null, false, null));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn, String aliases) {
+        this.selectColumns.add(new SelectCondition(null, selectedColumn, aliases, false, null));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue) {
+        this.selectColumns.add(new SelectCondition(null, selectedColumn, aliases, true, defaultValue));
+    }
 }
