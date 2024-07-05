@@ -23,7 +23,7 @@ public class DeleteRequest implements Executor {
         schemaBuilder.whereConditions(sql);
 
         String finalQuery = databaseConfiguration.replacePrefix(sql.toString());
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 

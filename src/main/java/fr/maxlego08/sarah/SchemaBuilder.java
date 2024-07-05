@@ -309,7 +309,7 @@ public class SchemaBuilder implements Schema {
         this.whereConditions(selectQuery);
 
         String finalQuery = selectQuery.toString();
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
@@ -349,7 +349,7 @@ public class SchemaBuilder implements Schema {
         }
 
         String finalQuery = databaseConfiguration.replacePrefix(selectQuery.toString());
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
@@ -511,14 +511,29 @@ public class SchemaBuilder implements Schema {
     public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
         Executor executor;
         switch (this.schemaType) {
-            case CREATE -> executor = new CreateRequest(this);
-            case ALTER -> executor = new AlterRequest(this);
-            case UPSERT -> executor = new UpsertRequest(this);
-            case UPDATE -> executor = new UpdateRequest(this);
-            case INSERT -> executor = new InsertRequest(this);
-            case DELETE -> executor = new DeleteRequest(this);
-            case SELECT, SELECT_COUNT -> throw new IllegalArgumentException("Wrong method !");
-            default -> throw new Error("Schema type not found !");
+            case CREATE:
+                executor = new CreateRequest(this);
+                break;
+            case ALTER:
+                executor = new AlterRequest(this);
+                break;
+            case UPSERT:
+                executor = new UpsertRequest(this);
+                break;
+            case UPDATE:
+                executor = new UpdateRequest(this);
+                break;
+            case INSERT:
+                executor = new InsertRequest(this);
+                break;
+            case DELETE:
+                executor = new DeleteRequest(this);
+                break;
+            case SELECT:
+            case SELECT_COUNT:
+                throw new IllegalArgumentException("Wrong method !");
+            default:
+                throw new Error("Schema type not found !");
         }
 
         return executor.execute(connection, databaseConfiguration, logger);

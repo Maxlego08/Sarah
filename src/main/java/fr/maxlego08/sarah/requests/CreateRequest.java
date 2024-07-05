@@ -43,7 +43,7 @@ public class CreateRequest implements Executor {
         createTableSQL.append(")");
 
         String finalQuery = databaseConfiguration.replacePrefix(createTableSQL.toString());
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 

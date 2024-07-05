@@ -1,10 +1,10 @@
 package fr.maxlego08.sarah.requests;
 
-import fr.maxlego08.sarah.conditions.ColumnDefinition;
-import fr.maxlego08.sarah.database.Executor;
-import fr.maxlego08.sarah.conditions.JoinCondition;
-import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.JoinCondition;
+import fr.maxlego08.sarah.database.Executor;
+import fr.maxlego08.sarah.database.Schema;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +45,7 @@ public class UpdateRequest implements Executor {
         this.schema.whereConditions(updateQuery);
         String upsertQuery = databaseConfiguration.replacePrefix(updateQuery.toString());
 
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + upsertQuery);
         }
 
