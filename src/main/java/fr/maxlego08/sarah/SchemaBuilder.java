@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class SchemaBuilder implements Schema {
 
@@ -332,7 +333,7 @@ public class SchemaBuilder implements Schema {
 
         String selectedValues = "*";
         if (!this.selectColumns.isEmpty()) {
-            selectedValues = String.join(",", this.selectColumns.stream().map(SelectCondition::getSelectColumn).toList());
+            selectedValues = this.selectColumns.stream().map(SelectCondition::getSelectColumn).collect(Collectors.joining(","));
         }
 
         StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + "." + selectedValues + " FROM " + this.tableName) : new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
