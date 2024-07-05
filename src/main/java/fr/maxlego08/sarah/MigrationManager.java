@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class MigrationManager {
 
@@ -65,7 +66,7 @@ public class MigrationManager {
     private static List<String> getMigrations(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) {
         Schema schema = SchemaBuilder.select(migrationTableName);
         try {
-            return schema.executeSelect(MigrationTable.class, connection, databaseConfiguration, logger).stream().map(MigrationTable::migration).toList();
+            return schema.executeSelect(MigrationTable.class, connection, databaseConfiguration, logger).stream().map(MigrationTable::getMigration).collect(Collectors.toList());
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -86,7 +87,15 @@ public class MigrationManager {
         migrations.add(migration);
     }
 
-    public record MigrationTable(String migration) {
+    public static class MigrationTable {
+        private final String migration;
 
+        public MigrationTable(String migration) {
+            this.migration = migration;
+        }
+
+        public String getMigration() {
+            return migration;
+        }
     }
 }

@@ -44,7 +44,7 @@ public class UpsertRequest implements Executor {
         insertQuery.append(") ");
         valuesQuery.append(")");
 
-        DatabaseType databaseType = databaseConfiguration.databaseType();
+        DatabaseType databaseType = databaseConfiguration.getDatabaseType();
         String upsertQuery;
 
         if (databaseType == DatabaseType.SQLITE) {
@@ -60,7 +60,7 @@ public class UpsertRequest implements Executor {
             upsertQuery = insertQuery + valuesQuery.toString() + onUpdateQuery;
         }
 
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + upsertQuery);
         }
 

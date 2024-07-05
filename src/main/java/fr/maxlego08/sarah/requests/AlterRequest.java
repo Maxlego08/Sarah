@@ -41,7 +41,7 @@ public class AlterRequest implements Executor {
         }
 
         String finalQuery = databaseConfiguration.replacePrefix(alterTableSQL.toString());
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 

@@ -41,7 +41,7 @@ public class InsertRequest implements Executor {
         valuesQuery.append(")");
         String upsertQuery = databaseConfiguration.replacePrefix(insertQuery + valuesQuery.toString());
 
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + upsertQuery);
         }
 
