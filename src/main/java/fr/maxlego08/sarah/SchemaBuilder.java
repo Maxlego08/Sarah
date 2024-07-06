@@ -16,7 +16,7 @@ import fr.maxlego08.sarah.requests.UpdateRequest;
 import fr.maxlego08.sarah.requests.UpsertRequest;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -397,10 +397,16 @@ public class SchemaBuilder implements Schema {
 
         for (Map<String, Object> row : results) {
             Object[] params = new Object[firstConstructor.getParameterCount()];
-            Parameter[] parameters = firstConstructor.getParameters();
-            for (int i = 0; i < parameters.length; i++) {
-                Parameter parameter = parameters[i];
-                params[i] = convertToRequiredType(row.get(parameter.getName()), parameter.getType());
+            Field[] fields = clazz.getDeclaredFields();
+
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                if (field.isAnnotationPresent(Column.class)) {
+                    Column column = field.getAnnotation(Column.class);
+                    params[i] = convertToRequiredType(row.get(column.value()), field.getType());
+                } else {
+                    params[i] = convertToRequiredType(row.get(field.getName()), field.getType());
+                }
             }
             T instance = (T) firstConstructor.newInstance(params);
             transformedResults.add(instance);
