@@ -195,3 +195,20 @@ public record PlayerItemPurchasedDTO(long id,
                                      AuctionType auction_type
 ) { }
 ````
+If you are in a java version that does not have records, you must use the `@Column` annotation to set the column name
+Here is an example with the table `MigrationTable`
+````java
+public static class MigrationTable {
+
+    @Column("migration")
+    private final String migration;
+
+    public MigrationTable(String migration) {
+        this.migration = migration;
+    }
+
+    public String getMigration() {
+        return migration;
+    }
+}
+````

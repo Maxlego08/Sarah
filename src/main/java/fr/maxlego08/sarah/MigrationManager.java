@@ -88,6 +88,8 @@ public class MigrationManager {
     }
 
     public static class MigrationTable {
+
+        @Column("migration")
         private final String migration;
 
         public MigrationTable(String migration) {
