@@ -1,7 +1,7 @@
 package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
-import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
 
@@ -43,7 +43,7 @@ public class CreateRequest implements Executor {
         createTableSQL.append(")");
 
         String finalQuery = databaseConfiguration.replacePrefix(createTableSQL.toString());
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 

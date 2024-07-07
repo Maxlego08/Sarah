@@ -1,8 +1,10 @@
 package fr.maxlego08.sarah;
 
-import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.JoinCondition;
+import fr.maxlego08.sarah.conditions.SelectCondition;
+import fr.maxlego08.sarah.conditions.WhereCondition;
 import fr.maxlego08.sarah.database.Executor;
-import fr.maxlego08.sarah.database.JoinCondition;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.database.SchemaType;
@@ -20,7 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class SchemaBuilder implements Schema {
 
@@ -44,6 +47,7 @@ public class SchemaBuilder implements Schema {
     private final List<String> foreignKeys = new ArrayList<>();
     private final List<WhereCondition> whereConditions = new ArrayList<>();
     private final List<JoinCondition> joinConditions = new ArrayList<>();
+    private final List<SelectCondition> selectColumns = new ArrayList<>();
     private String orderBy;
     private Migration migration;
     private boolean isDistinct;
@@ -332,7 +336,7 @@ public class SchemaBuilder implements Schema {
         this.whereConditions(selectQuery);
 
         String finalQuery = selectQuery.toString();
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
@@ -352,7 +356,13 @@ public class SchemaBuilder implements Schema {
     @Override
     public List<Map<String, Object>> executeSelect(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
         List<Map<String, Object>> results = new ArrayList<>();
-        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + ".* FROM " + this.tableName) : new StringBuilder("SELECT * FROM " + this.tableName);
+
+        String selectedValues = "*";
+        if (!this.selectColumns.isEmpty()) {
+            selectedValues = this.selectColumns.stream().map(SelectCondition::getSelectColumn).collect(Collectors.joining(","));
+        }
+
+        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + "." + selectedValues + " FROM " + this.tableName) : new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
 
         if (!this.joinConditions.isEmpty()) {
             for (JoinCondition join : this.joinConditions) {
@@ -366,7 +376,7 @@ public class SchemaBuilder implements Schema {
         }
 
         String finalQuery = databaseConfiguration.replacePrefix(selectQuery.toString());
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
@@ -413,10 +423,16 @@ public class SchemaBuilder implements Schema {
 
         for (Map<String, Object> row : results) {
             Object[] params = new Object[firstConstructor.getParameterCount()];
-            Parameter[] parameters = firstConstructor.getParameters();
-            for (int i = 0; i < parameters.length; i++) {
-                Parameter parameter = parameters[i];
-                params[i] = convertToRequiredType(row.get(parameter.getName()), parameter.getType());
+            Field[] fields = clazz.getDeclaredFields();
+
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                if (field.isAnnotationPresent(Column.class)) {
+                    Column column = field.getAnnotation(Column.class);
+                    params[i] = convertToRequiredType(row.get(column.value()), field.getType());
+                } else {
+                    params[i] = convertToRequiredType(row.get(field.getName()), field.getType());
+                }
             }
             T instance = (T) firstConstructor.newInstance(params);
             transformedResults.add(instance);
@@ -469,8 +485,32 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public Schema leftJoin(String primaryTable, String primaryTableAlias, String primaryColumn, String foreignTable, String foreignColumn) {
-        joinConditions.add(new JoinCondition(primaryTable, primaryTableAlias, primaryColumn, foreignTable, foreignColumn));
+    public Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.LEFT, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
+        return this;
+    }
+
+    @Override
+    public Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn, JoinCondition andCondition) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.LEFT, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, andCondition));
+        return this;
+    }
+
+    @Override
+    public Schema rightJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.RIGHT, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
+        return this;
+    }
+
+    @Override
+    public Schema innerJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.INNER, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
+        return this;
+    }
+
+    @Override
+    public Schema fullJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn) {
+        this.joinConditions.add(new JoinCondition(JoinCondition.JoinType.FULL, primaryTable, primaryColumnAlias, primaryColumn, foreignTable, foreignColumn, null));
         return this;
     }
 
@@ -523,17 +563,51 @@ public class SchemaBuilder implements Schema {
     public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
         Executor executor;
         switch (this.schemaType) {
-            case CREATE -> executor = new CreateRequest(this);
-            case ALTER -> executor = new AlterRequest(this);
-            case UPSERT -> executor = new UpsertRequest(this);
-            case UPDATE -> executor = new UpdateRequest(this);
-            case INSERT -> executor = new InsertRequest(this);
-            case DELETE -> executor = new DeleteRequest(this);
-            case SELECT, SELECT_COUNT -> throw new IllegalArgumentException("Wrong method !");
-            default -> throw new Error("Schema type not found !");
+            case CREATE:
+                executor = new CreateRequest(this);
+                break;
+            case ALTER:
+                executor = new AlterRequest(this);
+                break;
+            case UPSERT:
+                executor = new UpsertRequest(this);
+                break;
+            case UPDATE:
+                executor = new UpdateRequest(this);
+                break;
+            case INSERT:
+                executor = new InsertRequest(this);
+                break;
+            case DELETE:
+                executor = new DeleteRequest(this);
+                break;
+            case SELECT:
+            case SELECT_COUNT:
+                throw new IllegalArgumentException("Wrong method !");
+            default:
+                throw new Error("Schema type not found !");
         }
 
         return executor.execute(connection, databaseConfiguration, logger);
     }
 
+    @Override
+    public void addSelect(String selectedColumn) {
+        this.selectColumns.add(new SelectCondition(null, selectedColumn, null, false, null));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn) {
+        this.selectColumns.add(new SelectCondition(prefix, selectedColumn, null, false, null));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn, String aliases) {
+        this.selectColumns.add(new SelectCondition(null, selectedColumn, aliases, false, null));
+    }
+
+    @Override
+    public void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue) {
+        this.selectColumns.add(new SelectCondition(null, selectedColumn, aliases, true, defaultValue));
+    }
 }

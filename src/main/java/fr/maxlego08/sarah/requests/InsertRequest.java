@@ -1,6 +1,6 @@
 package fr.maxlego08.sarah.requests;
 
-import fr.maxlego08.sarah.database.ColumnDefinition;
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.DatabaseConfiguration;
@@ -41,7 +41,7 @@ public class InsertRequest implements Executor {
         valuesQuery.append(")");
         String upsertQuery = databaseConfiguration.replacePrefix(insertQuery + valuesQuery.toString());
 
-        if (databaseConfiguration.debug()) {
+        if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + upsertQuery);
         }
 

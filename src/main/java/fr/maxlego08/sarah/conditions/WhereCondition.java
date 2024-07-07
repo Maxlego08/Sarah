@@ -1,4 +1,4 @@
-package fr.maxlego08.sarah;
+package fr.maxlego08.sarah.conditions;
 
 public class WhereCondition {
     private final String column;
