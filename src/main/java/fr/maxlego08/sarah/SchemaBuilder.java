@@ -455,7 +455,7 @@ public class SchemaBuilder implements Schema {
             return ((Number) value).doubleValue();
         } else if (type == Integer.class || type == int.class) {
             return ((Number) value).intValue();
-        } else if(Serializable.class.isAssignableFrom(type)) {
+        } else if(Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
             return deserializeObject((byte[]) value, type);
         } else {
             return value;
