@@ -4,6 +4,7 @@ import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -49,6 +50,12 @@ public interface Schema {
     Schema bool(String columnName);
 
     Schema bool(String columnName, boolean value);
+
+    Schema blob(String columnName);
+
+    Schema blob(String columnName, byte[] value);
+
+    Schema blob(String columnName, Object object);
 
     // Column attributes
     Schema primary();

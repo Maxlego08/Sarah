@@ -15,6 +15,12 @@ import fr.maxlego08.sarah.requests.InsertRequest;
 import fr.maxlego08.sarah.requests.UpdateRequest;
 import fr.maxlego08.sarah.requests.UpsertRequest;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -203,6 +209,26 @@ public class SchemaBuilder implements Schema {
     @Override
     public Schema bool(String columnName, boolean value) {
         return this.addColumn(new ColumnDefinition(columnName).setObject(value));
+    }
+
+    @Override
+    public Schema blob(String columnName) {
+        return addColumn(new ColumnDefinition(columnName, "BLOB"));
+    }
+
+    @Override
+    public Schema blob(String columnName, byte[] value) {
+        return this.addColumn(new ColumnDefinition(columnName, "BLOB").setObject(value));
+    }
+
+    @Override
+    public Schema blob(String columnName, Object object) {
+        try {
+            byte[] serializedObject = serializeObject(object);
+            return this.addColumn(new ColumnDefinition(columnName, "BLOB").setObject(serializedObject));
+        } catch (IOException exception) {
+            throw new RuntimeException("An error occurred while serializing object for BLOB column: " + columnName, exception);
+        }
     }
 
     @Override
@@ -429,8 +455,27 @@ public class SchemaBuilder implements Schema {
             return ((Number) value).doubleValue();
         } else if (type == Integer.class || type == int.class) {
             return ((Number) value).intValue();
+        } else if(Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
+            return deserializeObject((byte[]) value, type);
         } else {
             return value;
+        }
+    }
+
+    protected byte[] serializeObject(Object object) throws IOException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(object);
+            return baos.toByteArray();
+        }
+    }
+
+    protected  <T> T deserializeObject(byte[] data, Class<T> type) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
+             ObjectInputStream ois = new ObjectInputStream(bais)) {
+            return type.cast(ois.readObject());
+        } catch (IOException | ClassNotFoundException exception) {
+            throw new Error("An exception occurred during deserialization of a BLOB ", exception);
         }
     }
 
