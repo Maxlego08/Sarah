@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import fr.maxlego08.sarah.logger.Logger;
 
 public class CreateRequest implements Executor {
 

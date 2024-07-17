@@ -1,10 +1,10 @@
 package fr.maxlego08.sarah.database;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 public interface Executor {
 

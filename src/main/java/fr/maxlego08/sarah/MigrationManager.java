@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import fr.maxlego08.sarah.logger.Logger;
 import java.util.stream.Collectors;
 
 public class MigrationManager {

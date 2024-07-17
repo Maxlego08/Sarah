@@ -3,8 +3,8 @@ package fr.maxlego08.sarah.database;
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
+import fr.maxlego08.sarah.logger.Logger;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 /**
  * Represents a schema builder for database operations.
@@ -76,7 +75,7 @@ public interface Schema {
 
     Schema nullable();
 
-    Schema defaultValue(String value);
+    Schema defaultValue(Object value);
 
     Schema where(String columnName, Object value);
 
@@ -135,7 +134,7 @@ public interface Schema {
     void addSelect(String selectedColumn);
 
     void addSelect(String prefix, String selectedColumn);
-    
+
     void addSelect(String prefix, String selectedColumn, String aliases);
 
     void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue);
