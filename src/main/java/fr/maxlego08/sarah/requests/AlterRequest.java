@@ -4,13 +4,13 @@ import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class AlterRequest implements Executor {
 

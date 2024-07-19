@@ -7,7 +7,7 @@ import fr.maxlego08.sarah.database.Schema;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Logger;
+import fr.maxlego08.sarah.logger.Logger;
 
 public class DeleteRequest implements Executor {
 

@@ -8,6 +8,7 @@ import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.database.SchemaType;
+import fr.maxlego08.sarah.logger.Logger;
 import fr.maxlego08.sarah.requests.AlterRequest;
 import fr.maxlego08.sarah.requests.CreateRequest;
 import fr.maxlego08.sarah.requests.DeleteRequest;
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class SchemaBuilder implements Schema {
@@ -284,8 +284,8 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public Schema defaultValue(String value) {
-        getLastColumn().setDefaultValue(value);
+    public Schema defaultValue(Object value) {
+        getLastColumn().setDefaultValue(value.toString());
         return this;
     }
 
