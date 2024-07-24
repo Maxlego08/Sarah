@@ -60,7 +60,7 @@ public abstract class DatabaseConnection {
      * @param connection The database connection to check.
      * @return true if the connection is valid, false otherwise.
      */
-    private boolean isConnected(Connection connection) {
+    protected boolean isConnected(Connection connection) {
         if (connection == null) {
             return false;
         }

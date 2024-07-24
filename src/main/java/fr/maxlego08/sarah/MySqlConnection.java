@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-public class MySqlConnection extends DatabaseConnection{
+public class MySqlConnection extends DatabaseConnection {
 
     public MySqlConnection(DatabaseConfiguration databaseConfiguration) {
         super(databaseConfiguration);
