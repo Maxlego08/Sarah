@@ -340,12 +340,16 @@ public class SchemaBuilder implements Schema {
             logger.info("Executing SQL: " + finalQuery);
         }
 
-        try (Connection connection = databaseConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
 
             applyWhereConditions(preparedStatement, 1);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) return resultSet.getInt(1);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw new SQLException("Failed to execute schema select count: " + exception.getMessage(), exception);
@@ -359,10 +363,17 @@ public class SchemaBuilder implements Schema {
 
         String selectedValues = "*";
         if (!this.selectColumns.isEmpty()) {
-            selectedValues = this.selectColumns.stream().map(SelectCondition::getSelectColumn).collect(Collectors.joining(","));
+            selectedValues = this.selectColumns.stream()
+                    .map(SelectCondition::getSelectColumn)
+                    .collect(Collectors.joining(","));
         }
 
-        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + "." + selectedValues + " FROM " + this.tableName) : new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
+        StringBuilder selectQuery;
+        if (this.isDistinct) {
+            selectQuery = new StringBuilder("SELECT DISTINCT " + selectedValues + " FROM " + this.tableName);
+        } else {
+            selectQuery = new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
+        }
 
         if (!this.joinConditions.isEmpty()) {
             for (JoinCondition join : this.joinConditions) {
@@ -371,17 +382,21 @@ public class SchemaBuilder implements Schema {
         }
 
         this.whereConditions(selectQuery);
+
         if (this.orderBy != null) {
             selectQuery.append(" ").append(this.orderBy);
         }
 
-        DatabaseConfiguration databaseConfiguration = databaseConnection.databaseConfiguration;
+        DatabaseConfiguration databaseConfiguration = databaseConnection.getDatabaseConfiguration();
         String finalQuery = databaseConfiguration.replacePrefix(selectQuery.toString());
+
         if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
-        try (Connection connection = databaseConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+
             applyWhereConditions(preparedStatement, 1);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -394,7 +409,7 @@ public class SchemaBuilder implements Schema {
                 }
             }
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.info("Failed to execute schema select: " + exception.getMessage());
             throw new SQLException("Failed to execute schema select: " + exception.getMessage(), exception);
         }
 
