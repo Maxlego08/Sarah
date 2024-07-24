@@ -1,17 +1,18 @@
 package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
+import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import fr.maxlego08.sarah.logger.Logger;
 
 public class UpdateRequest implements Executor {
 
@@ -22,7 +23,7 @@ public class UpdateRequest implements Executor {
     }
 
     @Override
-    public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
 
         StringBuilder updateQuery = new StringBuilder("UPDATE " + this.schema.getTableName());
 
@@ -43,13 +44,14 @@ public class UpdateRequest implements Executor {
         }
 
         this.schema.whereConditions(updateQuery);
-        String upsertQuery = databaseConfiguration.replacePrefix(updateQuery.toString());
+        String updateSql = databaseConfiguration.replacePrefix(updateQuery.toString());
 
         if (databaseConfiguration.isDebug()) {
-            logger.info("Executing SQL: " + upsertQuery);
+            logger.info("Executing SQL: " + updateSql);
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(upsertQuery)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(updateSql)) {
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i + 1, values.get(i));
             }

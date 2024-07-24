@@ -1,9 +1,11 @@
 package fr.maxlego08.sarah.requests;
 
+import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
-import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import fr.maxlego08.sarah.logger.Logger;
 
 public class InsertRequest implements Executor {
 
@@ -23,7 +24,7 @@ public class InsertRequest implements Executor {
     }
 
     @Override
-    public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
 
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
@@ -45,7 +46,8 @@ public class InsertRequest implements Executor {
             logger.info("Executing SQL: " + upsertQuery);
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(upsertQuery, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = databaseConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(upsertQuery, Statement.RETURN_GENERATED_KEYS)) {
+
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i + 1, values.get(i));
             }

@@ -1,9 +1,10 @@
 package fr.maxlego08.sarah.requests;
 
+import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
-import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.Connection;
@@ -21,7 +22,7 @@ public class AlterRequest implements Executor {
     }
 
     @Override
-    public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
 
         StringBuilder alterTableSQL = new StringBuilder("ALTER TABLE ");
         alterTableSQL.append(this.schema.getTableName()).append(" ");
@@ -45,11 +46,11 @@ public class AlterRequest implements Executor {
             logger.info("Executing SQL: " + finalQuery);
         }
 
-        try (PreparedStatement statement = connection.prepareStatement(finalQuery)) {
-            statement.execute();
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+            preparedStatement.execute();
         } catch (SQLException exception) {
             exception.printStackTrace();
-            throw new SQLException("Failed to execute schema creation: " + exception.getMessage(), exception);
         }
 
         return -1;

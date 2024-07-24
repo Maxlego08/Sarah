@@ -28,18 +28,18 @@ public class MigrationManager {
         schemas.add(schema);
     }
 
-    public static void execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) {
+    public static void execute(DatabaseConnection databaseConnection, Logger logger) {
 
-        createMigrationTable(connection, databaseConfiguration, logger);
+        createMigrationTable(databaseConnection, logger);
 
-        List<String> migrations = getMigrations(connection, databaseConfiguration, logger);
+        List<String> migrations = getMigrations(databaseConnection, logger);
 
         MigrationManager.migrations.stream().filter(migration -> !migrations.contains(migration.getClass().getSimpleName())).forEach(Migration::up);
 
         schemas.forEach(schema -> {
             try {
-                schema.execute(connection, databaseConfiguration, logger);
-                insertMigration(connection, databaseConfiguration, logger, schema.getMigration());
+                schema.execute(databaseConnection, logger);
+                insertMigration(databaseConnection, logger, schema.getMigration());
             } catch (SQLException exception) {
                 exception.printStackTrace();
             }
@@ -51,33 +51,33 @@ public class MigrationManager {
         return migrations;
     }
 
-    private static void createMigrationTable(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) {
+    private static void createMigrationTable(DatabaseConnection databaseConnection, Logger logger) {
         Schema schema = SchemaBuilder.create(null, migrationTableName, sc -> {
             sc.text("migration");
             sc.createdAt();
         });
         try {
-            schema.execute(connection, databaseConfiguration, logger);
+            schema.execute(databaseConnection, logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-    private static List<String> getMigrations(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) {
+    private static List<String> getMigrations(DatabaseConnection databaseConnection, Logger logger) {
         Schema schema = SchemaBuilder.select(migrationTableName);
         try {
-            return schema.executeSelect(MigrationTable.class, connection, databaseConfiguration, logger).stream().map(MigrationTable::getMigration).collect(Collectors.toList());
+            return schema.executeSelect(MigrationTable.class, databaseConnection, logger).stream().map(MigrationTable::getMigration).collect(Collectors.toList());
         } catch (Exception exception) {
             exception.printStackTrace();
         }
         return new ArrayList<>();
     }
 
-    private static void insertMigration(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger, Migration migration) {
+    private static void insertMigration(DatabaseConnection databaseConnection, Logger logger, Migration migration) {
         try {
             SchemaBuilder.insert(migrationTableName, schema -> {
                 schema.string("migration", migration.getClass().getSimpleName());
-            }).execute(connection, databaseConfiguration, logger);
+            }).execute(databaseConnection, logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

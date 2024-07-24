@@ -1,11 +1,10 @@
 package fr.maxlego08.sarah.database;
 
-import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.logger.Logger;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
@@ -96,13 +95,13 @@ public interface Schema {
     Schema fullJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
 
     // Execution methods
-    int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException;
+    int execute(DatabaseConnection databaseConnection, Logger logger) throws SQLException;
 
-    List<Map<String, Object>> executeSelect(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException;
+    List<Map<String, Object>> executeSelect(DatabaseConnection databaseConnection, Logger logger) throws SQLException;
 
-    long executeSelectCount(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException;
+    long executeSelectCount(DatabaseConnection databaseConnection, Logger logger) throws SQLException;
 
-    <T> List<T> executeSelect(Class<T> clazz, Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws Exception;
+    <T> List<T> executeSelect(Class<T> clazz, DatabaseConnection databaseConnection, Logger logger) throws Exception;
 
     // Migration method
     Migration getMigration();

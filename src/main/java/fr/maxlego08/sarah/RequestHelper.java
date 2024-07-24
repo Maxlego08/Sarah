@@ -1,12 +1,12 @@
 package fr.maxlego08.sarah;
 
 import fr.maxlego08.sarah.database.Schema;
+import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import fr.maxlego08.sarah.logger.Logger;
 
 public class RequestHelper {
 
@@ -20,7 +20,7 @@ public class RequestHelper {
 
     public void upsert(String tableName, Consumer<Schema> consumer) {
         try {
-            SchemaBuilder.upsert(tableName, consumer).execute(this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+            SchemaBuilder.upsert(tableName, consumer).execute(this.connection, this.logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class RequestHelper {
 
     public void update(String tableName, Consumer<Schema> consumer) {
         try {
-            SchemaBuilder.update(tableName, consumer).execute(this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+            SchemaBuilder.update(tableName, consumer).execute(this.connection, this.logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -41,7 +41,7 @@ public class RequestHelper {
 
     public void insert(String tableName, Consumer<Schema> consumer, Consumer<Integer> consumerResult) {
         try {
-            consumerResult.accept(SchemaBuilder.insert(tableName, consumer).execute(this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger));
+            consumerResult.accept(SchemaBuilder.insert(tableName, consumer).execute(this.connection, this.logger));
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class RequestHelper {
         Schema schema = SchemaBuilder.selectCount(tableName);
         consumer.accept(schema);
         try {
-            return schema.executeSelectCount(this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+            return schema.executeSelectCount(this.connection, this.logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -62,7 +62,7 @@ public class RequestHelper {
         Schema schema = SchemaBuilder.select(tableName);
         consumer.accept(schema);
         try {
-            return schema.executeSelect(clazz, this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+            return schema.executeSelect(clazz, this.connection, this.logger);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -72,7 +72,7 @@ public class RequestHelper {
     public <T> List<T> selectAll(String tableName, Class<T> clazz) {
         Schema schema = SchemaBuilder.select(tableName);
         try {
-            return schema.executeSelect(clazz, this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+            return schema.executeSelect(clazz, this.connection, this.logger);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -83,7 +83,7 @@ public class RequestHelper {
         Schema schema = SchemaBuilder.delete(tableName);
         consumer.accept(schema);
         try {
-            schema.execute(this.connection.getConnection(), this.connection.getDatabaseConfiguration(), this.logger);
+            schema.execute(this.connection, this.logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

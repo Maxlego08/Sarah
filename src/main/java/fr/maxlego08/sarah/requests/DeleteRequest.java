@@ -1,13 +1,14 @@
 package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
+import fr.maxlego08.sarah.logger.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import fr.maxlego08.sarah.logger.Logger;
 
 public class DeleteRequest implements Executor {
 
@@ -18,7 +19,7 @@ public class DeleteRequest implements Executor {
     }
 
     @Override
-    public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
         StringBuilder sql = new StringBuilder("DELETE FROM ").append(schemaBuilder.getTableName());
         schemaBuilder.whereConditions(sql);
 
@@ -27,9 +28,12 @@ public class DeleteRequest implements Executor {
             logger.info("Executing SQL: " + finalQuery);
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
             schemaBuilder.applyWhereConditions(preparedStatement, 1);
             preparedStatement.executeUpdate();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
         }
         return -1;
     }
