@@ -49,12 +49,7 @@ public class HikariDatabaseConnection extends DatabaseConnection {
 
     @Override
     public boolean isValid() {
-        try (Connection connection = dataSource.getConnection()) {
-            return connection.isValid(1);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-            return false;
-        }
+        return dataSource != null && dataSource.isRunning();
     }
 
     @Override

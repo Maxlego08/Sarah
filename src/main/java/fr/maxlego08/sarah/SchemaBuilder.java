@@ -331,21 +331,25 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public long executeSelectCount(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public long executeSelectCount(DatabaseConnection databaseConnection, Logger logger) throws SQLException {
         StringBuilder selectQuery = new StringBuilder("SELECT COUNT(*) FROM " + tableName);
         this.whereConditions(selectQuery);
 
         String finalQuery = selectQuery.toString();
-        if (databaseConfiguration.isDebug()) {
+        if (databaseConnection.getDatabaseConfiguration().isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
 
             applyWhereConditions(preparedStatement, 1);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) return resultSet.getInt(1);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
         } catch (SQLException exception) {
             exception.printStackTrace();
             throw new SQLException("Failed to execute schema select count: " + exception.getMessage(), exception);
@@ -354,15 +358,22 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public List<Map<String, Object>> executeSelect(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public List<Map<String, Object>> executeSelect(DatabaseConnection databaseConnection, Logger logger) throws SQLException {
         List<Map<String, Object>> results = new ArrayList<>();
 
         String selectedValues = "*";
         if (!this.selectColumns.isEmpty()) {
-            selectedValues = this.selectColumns.stream().map(SelectCondition::getSelectColumn).collect(Collectors.joining(","));
+            selectedValues = this.selectColumns.stream()
+                    .map(SelectCondition::getSelectColumn)
+                    .collect(Collectors.joining(","));
         }
 
-        StringBuilder selectQuery = this.isDistinct ? new StringBuilder("SELECT DISTINCT " + this.tableName + "." + selectedValues + " FROM " + this.tableName) : new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
+        StringBuilder selectQuery;
+        if (this.isDistinct) {
+            selectQuery = new StringBuilder("SELECT DISTINCT " + selectedValues + " FROM " + this.tableName);
+        } else {
+            selectQuery = new StringBuilder("SELECT " + selectedValues + " FROM " + this.tableName);
+        }
 
         if (!this.joinConditions.isEmpty()) {
             for (JoinCondition join : this.joinConditions) {
@@ -371,16 +382,21 @@ public class SchemaBuilder implements Schema {
         }
 
         this.whereConditions(selectQuery);
+
         if (this.orderBy != null) {
             selectQuery.append(" ").append(this.orderBy);
         }
 
+        DatabaseConfiguration databaseConfiguration = databaseConnection.getDatabaseConfiguration();
         String finalQuery = databaseConfiguration.replacePrefix(selectQuery.toString());
+
         if (databaseConfiguration.isDebug()) {
             logger.info("Executing SQL: " + finalQuery);
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
+
             applyWhereConditions(preparedStatement, 1);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -393,7 +409,7 @@ public class SchemaBuilder implements Schema {
                 }
             }
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            logger.info("Failed to execute schema select: " + exception.getMessage());
             throw new SQLException("Failed to execute schema select: " + exception.getMessage(), exception);
         }
 
@@ -410,8 +426,8 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public <T> List<T> executeSelect(Class<T> clazz, Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws Exception {
-        List<Map<String, Object>> results = executeSelect(connection, databaseConfiguration, logger);
+    public <T> List<T> executeSelect(Class<T> clazz, DatabaseConnection databaseConnection, Logger logger) throws Exception {
+        List<Map<String, Object>> results = executeSelect(databaseConnection, logger);
         return transformResults(results, clazz);
     }
 
@@ -455,7 +471,7 @@ public class SchemaBuilder implements Schema {
             return ((Number) value).doubleValue();
         } else if (type == Integer.class || type == int.class) {
             return ((Number) value).intValue();
-        } else if(Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
+        } else if (Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
             return deserializeObject((byte[]) value, type);
         } else {
             return value;
@@ -463,16 +479,14 @@ public class SchemaBuilder implements Schema {
     }
 
     protected byte[] serializeObject(Object object) throws IOException {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(object);
             return baos.toByteArray();
         }
     }
 
-    protected  <T> T deserializeObject(byte[] data, Class<T> type) {
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
-             ObjectInputStream ois = new ObjectInputStream(bais)) {
+    protected <T> T deserializeObject(byte[] data, Class<T> type) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(data); ObjectInputStream ois = new ObjectInputStream(bais)) {
             return type.cast(ois.readObject());
         } catch (IOException | ClassNotFoundException exception) {
             throw new Error("An exception occurred during deserialization of a BLOB ", exception);
@@ -560,7 +574,7 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public int execute(Connection connection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, Logger logger) throws SQLException {
         Executor executor;
         switch (this.schemaType) {
             case CREATE:
@@ -588,7 +602,7 @@ public class SchemaBuilder implements Schema {
                 throw new Error("Schema type not found !");
         }
 
-        return executor.execute(connection, databaseConfiguration, logger);
+        return executor.execute(databaseConnection, databaseConnection.getDatabaseConfiguration(), logger);
     }
 
     @Override
