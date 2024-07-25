@@ -20,7 +20,7 @@ public class SqliteConnection extends DatabaseConnection {
             this.folder.mkdirs();
         }
 
-        File databaseFile = new File(this.folder, "database.db");
+        File databaseFile = new File(this.folder, this.fileName);
         if (!databaseFile.exists()) {
             databaseFile.createNewFile();
         }
