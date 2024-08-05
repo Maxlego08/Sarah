@@ -2,11 +2,12 @@ package fr.maxlego08.sarah;
 
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
-import fr.maxlego08.sarah.logger.Logger;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import fr.maxlego08.sarah.logger.Logger;
 import java.util.stream.Collectors;
 
 public class MigrationManager {
@@ -51,7 +52,10 @@ public class MigrationManager {
     }
 
     private static void createMigrationTable(DatabaseConnection databaseConnection, Logger logger) {
-        Schema schema = SchemaBuilder.create(null, migrationTableName, sc -> sc.text("migration"));
+        Schema schema = SchemaBuilder.create(null, migrationTableName, sc -> {
+            sc.text("migration");
+            sc.createdAt();
+        });
         try {
             schema.execute(databaseConnection, logger);
         } catch (SQLException exception) {
