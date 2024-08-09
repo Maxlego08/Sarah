@@ -28,11 +28,6 @@ public class SqliteConnection extends DatabaseConnection {
         return DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getAbsolutePath());
     }
 
-    @Override
-    protected boolean isConnected(Connection connection) {
-        return connection != null;
-    }
-
     public File getFolder() {
         return folder;
     }
