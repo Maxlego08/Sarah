@@ -6,6 +6,7 @@ import fr.maxlego08.sarah.logger.Logger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class RequestHelper {
@@ -63,6 +64,17 @@ public class RequestHelper {
         consumer.accept(schema);
         try {
             return schema.executeSelect(clazz, this.connection, this.logger);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Map<String, Object>> select(String tableName, Consumer<Schema> consumer) {
+        Schema schema = SchemaBuilder.select(tableName);
+        consumer.accept(schema);
+        try {
+            return schema.executeSelect(this.connection, this.logger);
         } catch (Exception exception) {
             exception.printStackTrace();
         }

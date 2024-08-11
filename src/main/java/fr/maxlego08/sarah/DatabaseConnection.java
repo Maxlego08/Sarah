@@ -67,7 +67,7 @@ public abstract class DatabaseConnection {
 
         try {
             return connection.isValid(1);
-        } catch (SQLException exception) {
+        } catch (Exception exception) {
             return false;
         }
     }

@@ -61,12 +61,13 @@ public class UpsertRequest implements Executor {
             upsertQuery = insertQuery + valuesQuery.toString() + onUpdateQuery;
         }
 
+        String finalQuery = databaseConfiguration.replacePrefix(upsertQuery);
         if (databaseConfiguration.isDebug()) {
-            logger.info("Executing SQL: " + upsertQuery);
+            logger.info("Executing SQL: " + finalQuery);
         }
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(upsertQuery)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
 
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i + 1, values.get(i));
