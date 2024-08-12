@@ -24,7 +24,7 @@ public class UpsertRequest implements Executor {
 
     @Override
     public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
-
+        DatabaseType databaseType = databaseConfiguration.getDatabaseType();
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
         StringBuilder onUpdateQuery = new StringBuilder();
@@ -38,14 +38,17 @@ public class UpsertRequest implements Executor {
             if (i > 0) {
                 onUpdateQuery.append(", ");
             }
-            onUpdateQuery.append(columnDefinition.getSafeName()).append(" = ?");
+            if (databaseType == DatabaseType.SQLITE) {
+                onUpdateQuery.append(columnDefinition.getSafeName()).append(" = excluded.").append(columnDefinition.getSafeName());
+            } else {
+                onUpdateQuery.append(columnDefinition.getSafeName()).append(" = ?");
+            }
             values.add(columnDefinition.getObject());
         }
 
         insertQuery.append(") ");
         valuesQuery.append(")");
 
-        DatabaseType databaseType = databaseConfiguration.getDatabaseType();
         String upsertQuery;
 
         if (databaseType == DatabaseType.SQLITE) {

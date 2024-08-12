@@ -109,7 +109,7 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema where(String columnName, Object value) {
-        this.whereConditions.add(new WhereCondition(columnName, value));
+        this.whereConditions.add(new WhereCondition( columnName, value));
         return this;
     }
 
