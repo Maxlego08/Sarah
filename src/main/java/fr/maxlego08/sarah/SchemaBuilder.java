@@ -57,6 +57,10 @@ public class SchemaBuilder implements Schema {
         this.schemaType = schemaType;
     }
 
+    public static Schema create(Migration migration, String tableName, Class<?> template) {
+        return create(migration, tableName, ConsumerConstructor.createConsumerFromTemplate(template, null));
+    }
+
     public static Schema create(Migration migration, String tableName, Consumer<Schema> consumer) {
         SchemaBuilder schema = new SchemaBuilder(tableName, SchemaType.CREATE);
         if (migration != null) {
