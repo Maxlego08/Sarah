@@ -72,22 +72,17 @@ public class UpsertRequest implements Executor {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
 
-            System.out.println(databaseType);
-            if (databaseType == DatabaseType.SQLITE) {
-                int updateStartIndex = values.size() + 1;
-                System.out.println("start " + updateStartIndex + " - " + values.size() + values);
-                for (int i = 0; i < values.size(); i++) {  // updateColumns devrait contenir les colonnes réellement mises à jour
-                    System.out.println("J'update à " + (updateStartIndex + i));
-                    preparedStatement.setObject(updateStartIndex + i, values.get(i));
-                }
+            int index = 1;
 
-            } else {
-                for (int i = 0; i < values.size(); i++) {
-                    preparedStatement.setObject(i + 1, values.get(i));
-                }
+            // Setting values for INSERT part
+            for (Object value : values) {
+                preparedStatement.setObject(index++, value);
+            }
 
-                for (int i = 0; i < values.size(); i++) {
-                    preparedStatement.setObject(i + 1 + values.size(), values.get(i));
+            // Setting values for UPDATE part (only if not SQLite, since SQLite uses "excluded" keyword)
+            if (databaseType != DatabaseType.SQLITE) {
+                for (Object value : values) {
+                    preparedStatement.setObject(index++, value);
                 }
             }
             preparedStatement.executeUpdate();
