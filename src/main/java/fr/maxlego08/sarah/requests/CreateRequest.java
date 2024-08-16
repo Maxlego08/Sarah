@@ -29,7 +29,7 @@ public class CreateRequest implements Executor {
 
         List<String> columnSQLs = new ArrayList<>();
         for (ColumnDefinition column : this.schema.getColumns()) {
-            columnSQLs.add(column.build());
+            columnSQLs.add(column.build(databaseConfiguration));
         }
         createTableSQL.append(String.join(", ", columnSQLs));
 

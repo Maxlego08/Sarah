@@ -1,5 +1,8 @@
 package fr.maxlego08.sarah.conditions;
 
+import fr.maxlego08.sarah.DatabaseConfiguration;
+import fr.maxlego08.sarah.database.DatabaseType;
+
 public class ColumnDefinition {
     private String name;
     private String type;
@@ -22,7 +25,7 @@ public class ColumnDefinition {
         this.name = name;
     }
 
-    public String build() {
+    public String build(DatabaseConfiguration databaseConfiguration) {
         StringBuilder columnSQL = new StringBuilder("`" + name + "` " + type);
 
         if (length != 0 && decimal != 0) {
@@ -32,7 +35,9 @@ public class ColumnDefinition {
         }
 
         if (isAutoIncrement) {
-            columnSQL.append(" AUTO_INCREMENT");
+            if (databaseConfiguration.getDatabaseType() != DatabaseType.SQLITE) {
+                columnSQL.append(" AUTO_INCREMENT");
+            }
         }
 
         if (nullable) {
