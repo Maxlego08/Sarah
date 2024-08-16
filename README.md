@@ -35,8 +35,7 @@ dependencies {
 <dependency>
     <groupId>com.github.Maxlego08</groupId>
     <artifactId>Sarah</artifactId>
-    <version>
-    <version></version>
+    <version>[VERSION]</version>
 </dependency>
 ```
 
