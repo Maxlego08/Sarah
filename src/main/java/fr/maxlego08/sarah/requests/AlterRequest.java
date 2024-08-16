@@ -29,7 +29,7 @@ public class AlterRequest implements Executor {
 
         List<String> columnSQLs = new ArrayList<>();
         for (ColumnDefinition column : this.schema.getColumns()) {
-            columnSQLs.add("ADD COLUMN " + column.build());
+            columnSQLs.add("ADD COLUMN " + column.build(databaseConfiguration));
         }
         alterTableSQL.append(String.join(", ", columnSQLs));
 

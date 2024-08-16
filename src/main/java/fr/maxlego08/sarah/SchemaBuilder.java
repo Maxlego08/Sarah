@@ -270,6 +270,11 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema autoIncrement(String columnName) {
+        return addColumn(new ColumnDefinition(columnName, "INTEGER").setAutoIncrement(true)).primary();
+    }
+
+    @Override
+    public Schema autoIncrementBigInt(String columnName) {
         return addColumn(new ColumnDefinition(columnName, "BIGINT").setAutoIncrement(true)).primary();
     }
 

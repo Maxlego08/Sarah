@@ -72,6 +72,8 @@ public interface Schema {
 
     Schema autoIncrement(String columnName);
 
+    Schema autoIncrementBigInt(String columnName);
+
     Schema nullable();
 
     Schema defaultValue(Object value);
