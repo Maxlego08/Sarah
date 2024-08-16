@@ -75,8 +75,11 @@ public class UpsertRequest implements Executor {
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i + 1, values.get(i));
             }
-            for (int i = 0; i < values.size(); i++) {
-                preparedStatement.setObject(i + 1 + values.size(), values.get(i));
+
+            if (databaseType != DatabaseType.SQLITE) {
+                for (int i = 0; i < values.size(); i++) {
+                    preparedStatement.setObject(i + 1 + values.size(), values.get(i));
+                }
             }
             preparedStatement.executeUpdate();
 
