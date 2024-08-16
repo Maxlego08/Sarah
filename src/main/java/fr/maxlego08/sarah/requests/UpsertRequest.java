@@ -75,7 +75,9 @@ public class UpsertRequest implements Executor {
             System.out.println(databaseType);
             if (databaseType == DatabaseType.SQLITE) {
                 System.out.println("héhé");
+                System.out.println("> " + values.size() + " -> " + values);
                 for (int i = 0; i < values.size(); i++) {
+                    System.out.println("j'ajouite : " + i + " -- " + values.get(i));
                     preparedStatement.setObject(i, values.get(i));
                 }
             } else {
