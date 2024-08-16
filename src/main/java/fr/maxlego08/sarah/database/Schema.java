@@ -1,6 +1,7 @@
 package fr.maxlego08.sarah.database;
 
 import fr.maxlego08.sarah.DatabaseConnection;
+import fr.maxlego08.sarah.Result;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.logger.Logger;
@@ -97,7 +98,7 @@ public interface Schema {
     Schema fullJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
 
     // Execution methods
-    int execute(DatabaseConnection databaseConnection, Logger logger) throws SQLException;
+    Result execute(DatabaseConnection databaseConnection, Logger logger) throws SQLException;
 
     List<Map<String, Object>> executeSelect(DatabaseConnection databaseConnection, Logger logger) throws SQLException;
 
@@ -139,5 +140,9 @@ public interface Schema {
     void addSelect(String prefix, String selectedColumn, String aliases);
 
     void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue);
+
+    SchemaType getSchemaType();
+
+    Schema addColumn(ColumnDefinition column);
 }
 
