@@ -12,14 +12,13 @@ import java.util.function.Consumer;
 public class ConsumerConstructor {
 
 
-
     public static Consumer<Schema> createConsumerFromTemplate(Class<?> template, Object data) {
         Constructor<?>[] constructors = template.getDeclaredConstructors();
         Constructor<?> firstConstructor = constructors[0];
         firstConstructor.setAccessible(true);
 
         Field[] fields = template.getDeclaredFields();
-        if(fields.length != firstConstructor.getParameterCount()) {
+        if (fields.length != firstConstructor.getParameterCount()) {
             throw new IllegalArgumentException("Fields count does not match constructor parameters count");
         }
 
@@ -34,7 +33,7 @@ public class ConsumerConstructor {
                 String typeName = type.getTypeName().substring(type.getTypeName().lastIndexOf('.') + 1);
                 Column column = null;
 
-                if(field.isAnnotationPresent(Column.class)) {
+                if (field.isAnnotationPresent(Column.class)) {
                     column = field.getAnnotation(Column.class);
                 }
 
@@ -42,7 +41,7 @@ public class ConsumerConstructor {
                     typeName = column.type();
                 }
 
-                if(column != null && !column.value().isEmpty()) {
+                if (column != null && !column.value().isEmpty()) {
                     name = column.value();
                 }
 
@@ -52,29 +51,29 @@ public class ConsumerConstructor {
                     throw new RuntimeException(e);
                 }
 
-                if(column != null) {
-                    if(column.primary() && !primaryAlready) {
+                if (column != null) {
+                    if (column.primary() && !primaryAlready) {
                         primaryAlready = true;
                         schema.primary();
                     }
-                    if(column.autoIncrement()) {
-                        if(!type.getTypeName().equals("long")) {
+                    if (column.autoIncrement()) {
+                        if (!type.getTypeName().equals("long")) {
                             throw new IllegalArgumentException("Auto increment is only available for long type");
                         }
                         schema.autoIncrement(column.value());
                     }
-                    if(column.foreignKey()) {
-                        if(column.foreignKeyReference().isEmpty()) {
+                    if (column.foreignKey()) {
+                        if (column.foreignKeyReference().isEmpty()) {
                             throw new IllegalArgumentException("Foreign key reference is empty");
                         }
                         schema.foreignKey(column.foreignKeyReference());
                     }
-                    if(column.nullable()) {
+                    if (column.nullable()) {
                         schema.nullable();
                     }
                 }
 
-                if(i == 0 && !primaryAlready) {
+                if (i == 0 && !primaryAlready) {
                     primaryAlready = true;
                     schema.primary();
                 }
@@ -83,7 +82,7 @@ public class ConsumerConstructor {
     }
 
     private static void schemaFromType(Schema schema, String type, String name, Object object) {
-        switch(type.toLowerCase()) {
+        switch (type.toLowerCase()) {
             case "string":
                 if (object == null) {
                     schema.string(name, 255);

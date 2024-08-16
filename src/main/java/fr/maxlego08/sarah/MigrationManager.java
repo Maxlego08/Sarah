@@ -89,7 +89,7 @@ public class MigrationManager {
 
     public static class MigrationTable {
 
-        @Column("migration")
+        @Column(value = "migration")
         private final String migration;
 
         public MigrationTable(String migration) {

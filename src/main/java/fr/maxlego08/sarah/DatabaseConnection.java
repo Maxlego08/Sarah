@@ -66,7 +66,7 @@ public abstract class DatabaseConnection {
         }
 
         try {
-            return connection.isValid(1);
+            return !connection.isClosed() && connection.isValid(1);
         } catch (Exception exception) {
             return false;
         }
