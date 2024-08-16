@@ -39,4 +39,14 @@ public class SqliteConnection extends DatabaseConnection {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    @Override
+    public Connection getConnection() {
+        try {
+            return connectToDatabase();
+        } catch (Exception exception) {
+            connect();
+            return connection;
+        }
+    }
 }
