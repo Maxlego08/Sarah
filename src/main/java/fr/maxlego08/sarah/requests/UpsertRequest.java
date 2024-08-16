@@ -72,11 +72,17 @@ public class UpsertRequest implements Executor {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
 
-            for (int i = 0; i < values.size(); i++) {
-                preparedStatement.setObject(i + 1, values.get(i));
-            }
+            System.out.println(databaseType);
+            if (databaseType == DatabaseType.SQLITE) {
+                System.out.println("héhé");
+                for (int i = 0; i < values.size(); i++) {
+                    preparedStatement.setObject(i, values.get(i));
+                }
+            } else {
+                for (int i = 0; i < values.size(); i++) {
+                    preparedStatement.setObject(i + 1, values.get(i));
+                }
 
-            if (databaseType != DatabaseType.SQLITE) {
                 for (int i = 0; i < values.size(); i++) {
                     preparedStatement.setObject(i + 1 + values.size(), values.get(i));
                 }
