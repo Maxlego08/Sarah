@@ -74,12 +74,13 @@ public class UpsertRequest implements Executor {
 
             System.out.println(databaseType);
             if (databaseType == DatabaseType.SQLITE) {
-                System.out.println("héhé");
-                System.out.println("> " + values.size() + " -> " + values);
-                for (int i = 0; i < values.size(); i++) {
-                    System.out.println("j'ajouite : " + i + " -- " + values.get(i));
-                    preparedStatement.setObject(i, values.get(i));
+                int updateStartIndex = values.size() + 1;
+                System.out.println("start " + updateStartIndex + " - " + values.size() + values);
+                for (int i = 0; i < values.size(); i++) {  // updateColumns devrait contenir les colonnes réellement mises à jour
+                    System.out.println("J'update à " + (updateStartIndex + i));
+                    preparedStatement.setObject(updateStartIndex + i, values.get(i));
                 }
+
             } else {
                 for (int i = 0; i < values.size(); i++) {
                     preparedStatement.setObject(i + 1, values.get(i));
