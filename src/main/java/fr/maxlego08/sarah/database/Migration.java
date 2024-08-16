@@ -18,5 +18,9 @@ public abstract class Migration {
     protected void create(String table, Consumer<Schema> consumer) {
         SchemaBuilder.create(this, table, consumer);
     }
+
+    protected void create(String table, Class<?> template) {
+        SchemaBuilder.create(this, table, template);
+    }
 }
 

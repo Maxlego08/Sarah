@@ -19,6 +19,10 @@ public class RequestHelper {
         this.logger = logger;
     }
 
+    public <T> void upsert(String tableName, Class<T> clazz, T data) {
+        this.upsert(tableName, ConsumerConstructor.createConsumerFromTemplate(clazz, data));
+    }
+
     public void upsert(String tableName, Consumer<Schema> consumer) {
         try {
             SchemaBuilder.upsert(tableName, consumer).execute(this.connection, this.logger);
@@ -27,12 +31,20 @@ public class RequestHelper {
         }
     }
 
+    public <T> void update(String tableName, Class<T> clazz, T data) {
+        this.update(tableName, ConsumerConstructor.createConsumerFromTemplate(clazz, data));
+    }
+
     public void update(String tableName, Consumer<Schema> consumer) {
         try {
             SchemaBuilder.update(tableName, consumer).execute(this.connection, this.logger);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+    }
+
+    public <T> void insert(String tableName, Class<T> clazz, T data) {
+        this.insert(tableName, ConsumerConstructor.createConsumerFromTemplate(clazz, data));
     }
 
     public void insert(String tableName, Consumer<Schema> consumer) {
