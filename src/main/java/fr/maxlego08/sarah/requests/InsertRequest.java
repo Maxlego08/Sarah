@@ -2,6 +2,7 @@ package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConnection;
+import fr.maxlego08.sarah.Result;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
@@ -24,7 +25,7 @@ public class InsertRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public Result execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
@@ -55,16 +56,16 @@ public class InsertRequest implements Executor {
 
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
+                    return Result.SUCCESS;
                 } else {
-                    return -1;
+                    return Result.FAILURE;
                 }
             } catch (Exception exception) {
-                return -1;
+                return Result.ERROR;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
-            throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
+            return Result.ERROR;
         }
     }
 }

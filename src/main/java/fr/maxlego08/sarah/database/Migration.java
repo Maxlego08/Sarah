@@ -9,6 +9,7 @@ import java.util.function.Consumer;
  */
 public abstract class Migration {
 
+    private boolean alter = false;
 
     /**
      * Performs the migration to create or modify tables.
@@ -21,6 +22,20 @@ public abstract class Migration {
 
     protected void create(String table, Class<?> template) {
         SchemaBuilder.create(this, table, template);
+    }
+
+    protected void createOrAlter(String table, Consumer<Schema> consumer) {
+        this.create(table, consumer);
+        this.alter = true;
+    }
+
+    protected void createOrAlter(String table, Class<?> template) {
+        this.create(table, template);
+        this.alter = true;
+    }
+
+    public boolean isAlter() {
+        return alter;
     }
 }
 

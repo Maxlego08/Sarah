@@ -2,6 +2,7 @@ package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConnection;
+import fr.maxlego08.sarah.Result;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.database.Executor;
@@ -23,7 +24,7 @@ public class UpdateRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public Result execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder updateQuery = new StringBuilder("UPDATE " + this.schema.getTableName());
 
@@ -59,9 +60,9 @@ public class UpdateRequest implements Executor {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
-            throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
+            return Result.ERROR;
         }
 
-        return -1;
+        return Result.SUCCESS;
     }
 }

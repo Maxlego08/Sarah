@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ef51c40c-125a-4ff2-b84f-e65a28dcdab8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/MigrationManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/MigrationManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/RequestHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/RequestHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/SchemaBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/SchemaBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/database/Executor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/database/Executor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/database/Migration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/database/Migration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/database/Schema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/database/Schema.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/AlterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/AlterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/CreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/CreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/DeleteRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/DeleteRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/InsertRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/InsertRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/UpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/UpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/UpsertRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/maxlego08/sarah/requests/UpsertRequest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Traqueur-dev&quot;
+  }
+}</component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="fix/sqlite_request" />
+                    <option name="lastUsedInstant" value="1723484305" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="develop" />
+                    <option name="lastUsedInstant" value="1723484289" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="feature/class_usage_for_create_consumer" />
+                    <option name="lastUsedInstant" value="1723458853" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1723458852" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Traqueur-dev/Sarah.git&quot;,
+    &quot;accountId&quot;: &quot;0dc535b1-84d2-48cd-98c9-ce0bf505a4d1&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2kW3jz5a4FlQDiZdx3Hu7GKFXFd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Application.fr.traqueur.test.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SarahORM [clean,install].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hp/Documents/Developpement/devspace/Maxlego08/Sarah&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Maven.SarahORM [clean,install]">
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="fr.traqueur.test.Test" />
+      <module name="SarahORM" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="fr.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SarahORM [clean,install]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="cmdOptions" />
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="install" />
+              </list>
+            </option>
+            <option name="multimoduleDir" />
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="projectsCmdOptionValues">
+              <list />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.Test" />
+      <item itemvalue="Maven.SarahORM [clean,install]" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ef51c40c-125a-4ff2-b84f-e65a28dcdab8" name="Changes" comment="" />
+      <created>1723385644880</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1723385644880</updated>
+      <workItem from="1723385645911" duration="1148000" />
+      <workItem from="1723453247525" duration="5837000" />
+      <workItem from="1723484274070" duration="2802000" />
+      <workItem from="1723488460052" duration="115000" />
+      <workItem from="1723539743986" duration="18000" />
+      <workItem from="1723636308546" duration="6321000" />
+      <workItem from="1723823234274" duration="928000" />
+      <workItem from="1723824363303" duration="1017000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
