@@ -116,8 +116,7 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema where(String columnName, Object value) {
-        this.whereConditions.add(new WhereCondition(columnName, value));
-        return this;
+        return this.where(null, columnName, "=", value);
     }
 
     @Override
@@ -127,7 +126,12 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema where(String columnName, String operator, Object value) {
-        this.whereConditions.add(new WhereCondition(columnName, operator, value));
+        return this.where(null, columnName, operator, value);
+    }
+
+    @Override
+    public Schema where(String tablePrefix, String columnName, String operator, Object value) {
+        this.whereConditions.add(new WhereCondition(tablePrefix, columnName, operator, value));
         return this;
     }
 
