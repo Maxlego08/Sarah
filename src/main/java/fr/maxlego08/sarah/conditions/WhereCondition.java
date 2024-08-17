@@ -7,7 +7,7 @@ public class WhereCondition {
     private boolean isNotNull;
 
     public WhereCondition(String prefix, String column, String operator, Object value) {
-        this.column = (prefix == null ? "" : prefix) + "`" + column + "`";
+        this.column = (prefix == null ? "" : prefix + ".") + "`" + column + "`";
         this.operator = operator;
         this.value = value;
     }
