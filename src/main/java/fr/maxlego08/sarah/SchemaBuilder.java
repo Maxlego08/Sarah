@@ -4,6 +4,7 @@ import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.conditions.SelectCondition;
 import fr.maxlego08.sarah.conditions.WhereCondition;
+import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
@@ -113,7 +114,7 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema where(String columnName, Object value) {
-        this.whereConditions.add(new WhereCondition( columnName, value));
+        this.whereConditions.add(new WhereCondition(columnName, value));
         return this;
     }
 
@@ -281,7 +282,13 @@ public class SchemaBuilder implements Schema {
     @Override
     public Schema updatedAt() {
         ColumnDefinition column = new ColumnDefinition("updated_at", "TIMESTAMP");
-        column.setDefaultValue("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+        DatabaseConfiguration configuration = MigrationManager.getDatabaseConfiguration();
+        if (configuration.getDatabaseType() == DatabaseType.SQLITE) {
+            column.setDefaultValue("CURRENT_TIMESTAMP");
+        } else {
+            column.setDefaultValue("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+        }
         this.columns.add(column);
         return this;
     }

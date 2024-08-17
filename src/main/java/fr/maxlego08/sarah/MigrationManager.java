@@ -2,12 +2,11 @@ package fr.maxlego08.sarah;
 
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
+import fr.maxlego08.sarah.logger.Logger;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import fr.maxlego08.sarah.logger.Logger;
 import java.util.stream.Collectors;
 
 public class MigrationManager {
@@ -15,6 +14,7 @@ public class MigrationManager {
     private static final List<Schema> schemas = new ArrayList<>();
     private static final List<Migration> migrations = new ArrayList<>();
     private static String migrationTableName = "migrations";
+    private static DatabaseConfiguration databaseConfiguration;
 
     public static String getMigrationTableName() {
         return migrationTableName;
@@ -22,6 +22,14 @@ public class MigrationManager {
 
     public static void setMigrationTableName(String migrationTableName) {
         MigrationManager.migrationTableName = migrationTableName;
+    }
+
+    public static DatabaseConfiguration getDatabaseConfiguration() {
+        return databaseConfiguration;
+    }
+
+    public static void setDatabaseConfiguration(DatabaseConfiguration databaseConfiguration) {
+        MigrationManager.databaseConfiguration = databaseConfiguration;
     }
 
     public static void registerSchema(Schema schema) {
