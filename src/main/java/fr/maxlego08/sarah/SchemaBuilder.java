@@ -30,6 +30,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -489,6 +491,20 @@ public class SchemaBuilder implements Schema {
             return ((Number) value).intValue();
         } else if (Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
             return deserializeObject((byte[]) value, type);
+        } else if (type == Date.class) {
+
+            if (value instanceof String) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date result = null;
+                try {
+                    result = formatter.parse((String) value);
+                } catch (ParseException exception) {
+                    exception.printStackTrace();
+                }
+                return result;
+            }
+            if (value instanceof Number) return new Date(((Number) value).longValue());
+            else return null;
         } else {
             return value;
         }
