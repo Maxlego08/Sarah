@@ -6,8 +6,8 @@ public class WhereCondition {
     private final String operator;
     private boolean isNotNull;
 
-    public WhereCondition(String column, String operator, Object value) {
-        this.column = "`" + column + "`";
+    public WhereCondition(String prefix, String column, String operator, Object value) {
+        this.column = (prefix == null ? "" : prefix + ".") + "`" + column + "`";
         this.operator = operator;
         this.value = value;
     }
@@ -17,10 +17,6 @@ public class WhereCondition {
         this.value = null;
         this.operator = null;
         this.isNotNull = true;
-    }
-
-    public WhereCondition(String column, Object value) {
-        this(column, "=", value);
     }
 
     public String getCondition() {
