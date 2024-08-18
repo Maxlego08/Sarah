@@ -141,5 +141,9 @@ public interface Schema {
     void addSelect(String prefix, String selectedColumn, String aliases);
 
     void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue);
+
+    SchemaType getSchemaType();
+
+    Schema addColumn(ColumnDefinition column);
 }
 

@@ -24,7 +24,7 @@ public class InsertRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
@@ -55,16 +55,16 @@ public class InsertRequest implements Executor {
 
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
+                    return 1;
                 } else {
-                    return -1;
+                    return 0;
                 }
             } catch (Exception exception) {
                 return -1;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
-            throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
+            return -1;
         }
     }
 }

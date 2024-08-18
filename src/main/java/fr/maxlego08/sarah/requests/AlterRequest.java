@@ -22,7 +22,7 @@ public class AlterRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder alterTableSQL = new StringBuilder("ALTER TABLE ");
         alterTableSQL.append(this.schema.getTableName()).append(" ");
@@ -49,10 +49,10 @@ public class AlterRequest implements Executor {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
             preparedStatement.execute();
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
+            return -1;
         }
-
-        return -1;
     }
 }

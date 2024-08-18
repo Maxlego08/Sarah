@@ -80,6 +80,10 @@ public class SchemaBuilder implements Schema {
         return schema;
     }
 
+    public static Schema alter(Migration migration, String tableName, Class<?> template) {
+        return alter(migration, tableName, ConsumerConstructor.createConsumerFromTemplate(template, null));
+    }
+
     public static Schema alter(Migration migration, String tableName, Consumer<Schema> consumer) {
         SchemaBuilder schema = new SchemaBuilder(tableName, SchemaType.ALTER);
         if (migration != null) {
@@ -319,7 +323,7 @@ public class SchemaBuilder implements Schema {
         return this;
     }
 
-    private Schema addColumn(ColumnDefinition column) {
+    public Schema addColumn(ColumnDefinition column) {
         columns.add(column);
         return this;
     }
@@ -487,6 +491,8 @@ public class SchemaBuilder implements Schema {
             return new BigDecimal(value.toString());
         } else if (type == UUID.class) {
             return UUID.fromString((String) value);
+        } else if (type == Boolean.class || type == boolean.class) {
+            return ((Number) value).intValue() == 1;
         } else if (type == Long.class || type == long.class) {
             return ((Number) value).longValue();
         } else if (type == Double.class || type == double.class) {
@@ -659,5 +665,10 @@ public class SchemaBuilder implements Schema {
     @Override
     public void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue) {
         this.selectColumns.add(new SelectCondition(null, selectedColumn, aliases, true, defaultValue));
+    }
+
+    @Override
+    public SchemaType getSchemaType() {
+        return this.schemaType;
     }
 }
