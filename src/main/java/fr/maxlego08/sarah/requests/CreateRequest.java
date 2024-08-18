@@ -2,7 +2,6 @@ package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConnection;
-import fr.maxlego08.sarah.Result;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Schema;
@@ -23,7 +22,7 @@ public class CreateRequest implements Executor {
     }
 
     @Override
-    public Result execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder createTableSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         createTableSQL.append(this.schema.getTableName()).append(" (");
@@ -51,10 +50,10 @@ public class CreateRequest implements Executor {
 
         try (Connection connection = databaseConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
             preparedStatement.execute();
-            return preparedStatement.getUpdateCount() == 0 ? Result.FAILURE : Result.SUCCESS;
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
-            return Result.ERROR;
+            return -1;
         }
     }
 }

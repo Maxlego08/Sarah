@@ -491,6 +491,8 @@ public class SchemaBuilder implements Schema {
             return new BigDecimal(value.toString());
         } else if (type == UUID.class) {
             return UUID.fromString((String) value);
+        } else if (type == Boolean.class || type == boolean.class) {
+            return ((Number) value).intValue() == 1;
         } else if (type == Long.class || type == long.class) {
             return ((Number) value).longValue();
         } else if (type == Double.class || type == double.class) {
@@ -614,7 +616,7 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
-    public Result execute(DatabaseConnection databaseConnection, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, Logger logger) throws SQLException {
         Executor executor;
         switch (this.schemaType) {
             case CREATE:

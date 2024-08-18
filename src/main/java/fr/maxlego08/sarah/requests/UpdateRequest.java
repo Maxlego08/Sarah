@@ -2,7 +2,6 @@ package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConnection;
-import fr.maxlego08.sarah.Result;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.database.Executor;
@@ -24,7 +23,7 @@ public class UpdateRequest implements Executor {
     }
 
     @Override
-    public Result execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder updateQuery = new StringBuilder("UPDATE " + this.schema.getTableName());
 
@@ -58,11 +57,10 @@ public class UpdateRequest implements Executor {
             }
             this.schema.applyWhereConditions(preparedStatement, values.size() + 1);
             preparedStatement.executeUpdate();
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
-            return Result.ERROR;
+            return -1;
         }
-
-        return Result.SUCCESS;
     }
 }

@@ -2,7 +2,6 @@ package fr.maxlego08.sarah.requests;
 
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConnection;
-import fr.maxlego08.sarah.Result;
 import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Executor;
@@ -24,7 +23,7 @@ public class UpsertRequest implements Executor {
     }
 
     @Override
-    public Result execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
         DatabaseType databaseType = databaseConfiguration.getDatabaseType();
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
@@ -87,13 +86,12 @@ public class UpsertRequest implements Executor {
                 }
             }
             preparedStatement.executeUpdate();
-
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
             //throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
-            return Result.ERROR;
+            return -1;
         }
 
-        return Result.SUCCESS;
     }
 }

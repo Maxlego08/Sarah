@@ -52,7 +52,7 @@ public class RequestHelper {
         });
     }
 
-    public void insert(String tableName, Consumer<Schema> consumer, Consumer<Result> consumerResult) {
+    public void insert(String tableName, Consumer<Schema> consumer, Consumer<Integer> consumerResult) {
         try {
             consumerResult.accept(SchemaBuilder.insert(tableName, consumer).execute(this.connection, this.logger));
         } catch (SQLException exception) {
