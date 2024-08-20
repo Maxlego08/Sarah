@@ -1,17 +1,24 @@
 package fr.maxlego08.sarah;
 
+import fr.maxlego08.sarah.conditions.ColumnDefinition;
+import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.logger.Logger;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MigrationManager {
 
-    private static final List<Schema> schemas = new ArrayList<>();
+    private static final Map<String, Schema> schemas = new HashMap<>();
     private static final List<Migration> migrations = new ArrayList<>();
     private static String migrationTableName = "migrations";
     private static DatabaseConfiguration databaseConfiguration;
@@ -33,26 +40,91 @@ public class MigrationManager {
     }
 
     public static void registerSchema(Schema schema) {
-        schemas.add(schema);
+        schemas.put(schema.getTableName(), schema);
     }
 
     public static void execute(DatabaseConnection databaseConnection, Logger logger) {
 
         createMigrationTable(databaseConnection, logger);
 
-        List<String> migrations = getMigrations(databaseConnection, logger);
+        List<String> migrationsFromDatabase = getMigrations(databaseConnection, logger);
 
-        MigrationManager.migrations.stream().filter(migration -> !migrations.contains(migration.getClass().getSimpleName())).forEach(Migration::up);
+        MigrationManager.migrations.forEach(Migration::up);
 
-        schemas.forEach(schema -> {
-            try {
-                schema.execute(databaseConnection, logger);
-                insertMigration(databaseConnection, logger, schema.getMigration());
-            } catch (SQLException exception) {
-                exception.printStackTrace();
+        schemas.forEach((table, schema) -> {
+            if(!migrationsFromDatabase.contains(schema.getMigration().getClass().getSimpleName())) {
+                int result;
+                try {
+                    result = schema.execute(databaseConnection, logger);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                if(result != -1) {
+                    insertMigration(databaseConnection, logger, schema.getMigration());
+                }
+            } else {
+                if(!schema.getMigration().isAlter()) {
+                    return;
+                }
+
+                List<ColumnDefinition> mustBeAdd = new ArrayList<>();
+
+                String tableName = schema.getTableName();
+                tableName = tableName.replace("%prefix%", databaseConnection.getDatabaseConfiguration().getTablePrefix());
+
+                if(databaseConnection.getDatabaseConfiguration().getDatabaseType() == DatabaseType.SQLITE) {
+                    try (Connection connection = databaseConnection.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(String.format("PRAGMA table_info(%s)", tableName))) {
+                        List<ColumnDefinition> columnDefinitions = schema.getColumns();
+                        logger.info("Executing SQL: " + String.format("PRAGMA table_info(%s)", tableName));
+                        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                            while(resultSet.next()) {
+                                String columnName = resultSet.getString("name");
+                                columnDefinitions.removeIf(column -> column.getName().equals(columnName));
+                            }
+                        }
+                        mustBeAdd.addAll(columnDefinitions);
+                    } catch (SQLException exception) {
+                        exception.printStackTrace();
+                    }
+                } else {
+                    for (ColumnDefinition column : schema.getColumns()) {
+                        Schema columnExistQuery;
+                        long result;
+                        columnExistQuery = SchemaBuilder.selectCount("information_schema.COLUMNS")
+                                .where("TABLE_NAME", tableName)
+                                .where("TABLE_SCHEMA", databaseConnection.getDatabaseConfiguration().getDatabase())
+                                .where("COLUMN_NAME", column.getName());
+                        try {
+                            result = columnExistQuery.executeSelectCount(databaseConnection, logger);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        if(result == 0) {
+                            mustBeAdd.add(column);
+                        }
+                    }
+                }
+
+                if (mustBeAdd.isEmpty()) {
+                    return;
+                }
+
+                try {
+                    int result = SchemaBuilder.alter(null, tableName, (schemaAlter) -> {
+                        for (ColumnDefinition column : mustBeAdd) {
+                            schemaAlter.addColumn(column).nullable();
+                        }
+                    }).execute(databaseConnection, logger);
+                    if(result == -1) {
+                        insertMigration(databaseConnection, logger, schema.getMigration());
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         });
-
     }
 
     public static List<Migration> getMigrations() {
