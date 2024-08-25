@@ -492,7 +492,8 @@ public class SchemaBuilder implements Schema {
         } else if (type == UUID.class) {
             return UUID.fromString((String) value);
         } else if (type == Boolean.class || type == boolean.class) {
-            return ((Number) value).intValue() == 1;
+            String stringValue = value.toString();
+            return stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("1");
         } else if (type == Long.class || type == long.class) {
             return ((Number) value).longValue();
         } else if (type == Double.class || type == double.class) {
