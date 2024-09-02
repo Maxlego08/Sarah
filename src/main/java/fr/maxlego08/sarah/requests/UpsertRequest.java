@@ -23,7 +23,7 @@ public class UpsertRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
         DatabaseType databaseType = databaseConfiguration.getDatabaseType();
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + this.schema.getTableName() + " (");
         StringBuilder valuesQuery = new StringBuilder("VALUES (");
@@ -86,12 +86,12 @@ public class UpsertRequest implements Executor {
                 }
             }
             preparedStatement.executeUpdate();
-
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
-            throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
+            //throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
+            return -1;
         }
 
-        return -1;
     }
 }

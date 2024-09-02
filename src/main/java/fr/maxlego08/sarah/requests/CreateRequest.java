@@ -22,7 +22,7 @@ public class CreateRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder createTableSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         createTableSQL.append(this.schema.getTableName()).append(" (");
@@ -50,10 +50,10 @@ public class CreateRequest implements Executor {
 
         try (Connection connection = databaseConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
             preparedStatement.execute();
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
+            return -1;
         }
-
-        return -1;
     }
 }

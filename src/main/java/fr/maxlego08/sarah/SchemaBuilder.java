@@ -4,6 +4,7 @@ import fr.maxlego08.sarah.conditions.ColumnDefinition;
 import fr.maxlego08.sarah.conditions.JoinCondition;
 import fr.maxlego08.sarah.conditions.SelectCondition;
 import fr.maxlego08.sarah.conditions.WhereCondition;
+import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Executor;
 import fr.maxlego08.sarah.database.Migration;
 import fr.maxlego08.sarah.database.Schema;
@@ -29,6 +30,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,6 +80,10 @@ public class SchemaBuilder implements Schema {
         return schema;
     }
 
+    public static Schema alter(Migration migration, String tableName, Class<?> template) {
+        return alter(migration, tableName, ConsumerConstructor.createConsumerFromTemplate(template, null));
+    }
+
     public static Schema alter(Migration migration, String tableName, Consumer<Schema> consumer) {
         SchemaBuilder schema = new SchemaBuilder(tableName, SchemaType.ALTER);
         if (migration != null) {
@@ -113,8 +120,7 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema where(String columnName, Object value) {
-        this.whereConditions.add(new WhereCondition( columnName, value));
-        return this;
+        return this.where(null, columnName, "=", value);
     }
 
     @Override
@@ -124,7 +130,12 @@ public class SchemaBuilder implements Schema {
 
     @Override
     public Schema where(String columnName, String operator, Object value) {
-        this.whereConditions.add(new WhereCondition(columnName, operator, value));
+        return this.where(null, columnName, operator, value);
+    }
+
+    @Override
+    public Schema where(String tablePrefix, String columnName, String operator, Object value) {
+        this.whereConditions.add(new WhereCondition(tablePrefix, columnName, operator, value));
         return this;
     }
 
@@ -281,7 +292,13 @@ public class SchemaBuilder implements Schema {
     @Override
     public Schema updatedAt() {
         ColumnDefinition column = new ColumnDefinition("updated_at", "TIMESTAMP");
-        column.setDefaultValue("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
+        DatabaseConfiguration configuration = MigrationManager.getDatabaseConfiguration();
+        if (configuration.getDatabaseType() == DatabaseType.SQLITE) {
+            column.setDefaultValue("CURRENT_TIMESTAMP");
+        } else {
+            column.setDefaultValue("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+        }
         this.columns.add(column);
         return this;
     }
@@ -306,7 +323,7 @@ public class SchemaBuilder implements Schema {
         return this;
     }
 
-    private Schema addColumn(ColumnDefinition column) {
+    public Schema addColumn(ColumnDefinition column) {
         columns.add(column);
         return this;
     }
@@ -474,6 +491,9 @@ public class SchemaBuilder implements Schema {
             return new BigDecimal(value.toString());
         } else if (type == UUID.class) {
             return UUID.fromString((String) value);
+        } else if (type == Boolean.class || type == boolean.class) {
+            String stringValue = value.toString();
+            return stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("1");
         } else if (type == Long.class || type == long.class) {
             return ((Number) value).longValue();
         } else if (type == Double.class || type == double.class) {
@@ -482,6 +502,20 @@ public class SchemaBuilder implements Schema {
             return ((Number) value).intValue();
         } else if (Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
             return deserializeObject((byte[]) value, type);
+        } else if (type == Date.class) {
+
+            if (value instanceof String) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date result = null;
+                try {
+                    result = formatter.parse((String) value);
+                } catch (ParseException exception) {
+                    exception.printStackTrace();
+                }
+                return result;
+            }
+            if (value instanceof Number) return new Date(((Number) value).longValue());
+            else return null;
         } else {
             return value;
         }
@@ -632,5 +666,10 @@ public class SchemaBuilder implements Schema {
     @Override
     public void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue) {
         this.selectColumns.add(new SelectCondition(null, selectedColumn, aliases, true, defaultValue));
+    }
+
+    @Override
+    public SchemaType getSchemaType() {
+        return this.schemaType;
     }
 }

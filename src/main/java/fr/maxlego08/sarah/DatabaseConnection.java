@@ -31,12 +31,6 @@ public abstract class DatabaseConnection {
      * @return true if the connection is valid, false otherwise.
      */
     public boolean isValid() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException exception) {
-            exception.printStackTrace();
-            return false;
-        }
 
         if (!isConnected(connection)) {
             try {

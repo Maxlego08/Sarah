@@ -46,7 +46,7 @@ public class ConsumerConstructor {
                 }
 
                 try {
-                    schemaFromType(schema, typeName, name, field.get(data));
+                    schemaFromType(schema, typeName, name, data == null ? null : field.get(data));
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }

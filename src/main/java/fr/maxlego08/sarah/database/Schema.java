@@ -84,6 +84,8 @@ public interface Schema {
 
     Schema where(String columnName, String operator, Object value);
 
+    Schema where(String tablePrefix, String columnName, String operator, Object value);
+
     Schema whereNotNull(String columnName);
 
     Schema leftJoin(String primaryTable, String primaryColumnAlias, String primaryColumn, String foreignTable, String foreignColumn);
@@ -139,5 +141,9 @@ public interface Schema {
     void addSelect(String prefix, String selectedColumn, String aliases);
 
     void addSelect(String prefix, String selectedColumn, String aliases, Object defaultValue);
+
+    SchemaType getSchemaType();
+
+    Schema addColumn(ColumnDefinition column);
 }
 

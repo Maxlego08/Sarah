@@ -19,7 +19,7 @@ public class DeleteRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
         StringBuilder sql = new StringBuilder("DELETE FROM ").append(schemaBuilder.getTableName());
         schemaBuilder.whereConditions(sql);
 
@@ -31,10 +31,11 @@ public class DeleteRequest implements Executor {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(finalQuery)) {
             schemaBuilder.applyWhereConditions(preparedStatement, 1);
-            preparedStatement.executeUpdate();
+            int result = preparedStatement.executeUpdate();
+            return result;
         } catch (SQLException exception) {
             exception.printStackTrace();
+            return -1;
         }
-        return -1;
     }
 }

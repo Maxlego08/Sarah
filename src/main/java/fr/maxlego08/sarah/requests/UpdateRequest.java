@@ -23,7 +23,7 @@ public class UpdateRequest implements Executor {
     }
 
     @Override
-    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) throws SQLException {
+    public int execute(DatabaseConnection databaseConnection, DatabaseConfiguration databaseConfiguration, Logger logger) {
 
         StringBuilder updateQuery = new StringBuilder("UPDATE " + this.schema.getTableName());
 
@@ -57,11 +57,10 @@ public class UpdateRequest implements Executor {
             }
             this.schema.applyWhereConditions(preparedStatement, values.size() + 1);
             preparedStatement.executeUpdate();
+            return preparedStatement.getUpdateCount();
         } catch (SQLException exception) {
             exception.printStackTrace();
-            throw new SQLException("Failed to execute upsert: " + exception.getMessage(), exception);
+            return -1;
         }
-
-        return -1;
     }
 }
