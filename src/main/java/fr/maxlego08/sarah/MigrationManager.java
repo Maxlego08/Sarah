@@ -51,19 +51,28 @@ public class MigrationManager {
 
         MigrationManager.migrations.forEach(Migration::up);
 
+        if (databaseConfiguration.isDebug()) {
+            logger.info("Schemas: " + schemas.size());
+        }
+
+        System.out.println("----");
+        System.out.println();
+        System.out.println(schemas);
+        System.out.println();
+        System.out.println("----");
         schemas.forEach((table, schema) -> {
-            if(!migrationsFromDatabase.contains(schema.getMigration().getClass().getSimpleName())) {
+            if (!migrationsFromDatabase.contains(schema.getMigration().getClass().getSimpleName())) {
                 int result;
                 try {
                     result = schema.execute(databaseConnection, logger);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                if(result != -1) {
+                if (result != -1) {
                     insertMigration(databaseConnection, logger, schema.getMigration());
                 }
             } else {
-                if(!schema.getMigration().isAlter()) {
+                if (!schema.getMigration().isAlter()) {
                     return;
                 }
 
@@ -72,13 +81,13 @@ public class MigrationManager {
                 String tableName = schema.getTableName();
                 tableName = tableName.replace("%prefix%", databaseConnection.getDatabaseConfiguration().getTablePrefix());
 
-                if(databaseConnection.getDatabaseConfiguration().getDatabaseType() == DatabaseType.SQLITE) {
+                if (databaseConnection.getDatabaseConfiguration().getDatabaseType() == DatabaseType.SQLITE) {
                     try (Connection connection = databaseConnection.getConnection();
                          PreparedStatement preparedStatement = connection.prepareStatement(String.format("PRAGMA table_info(%s)", tableName))) {
                         List<ColumnDefinition> columnDefinitions = schema.getColumns();
                         logger.info("Executing SQL: " + String.format("PRAGMA table_info(%s)", tableName));
                         try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                            while(resultSet.next()) {
+                            while (resultSet.next()) {
                                 String columnName = resultSet.getString("name");
                                 columnDefinitions.removeIf(column -> column.getName().equals(columnName));
                             }
@@ -100,7 +109,7 @@ public class MigrationManager {
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
-                        if(result == 0) {
+                        if (result == 0) {
                             mustBeAdd.add(column);
                         }
                     }
@@ -116,7 +125,7 @@ public class MigrationManager {
                             schemaAlter.addColumn(column).nullable();
                         }
                     }).execute(databaseConnection, logger);
-                    if(result == -1) {
+                    if (result == -1) {
                         insertMigration(databaseConnection, logger, schema.getMigration());
                     }
                 } catch (SQLException e) {
