@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class MigrationManager {
 
-    private static final Map<String, Schema> schemas = new HashMap<>();
+    private static final List<Schema> schemas = new ArrayList<>();
     private static final List<Migration> migrations = new ArrayList<>();
     private static String migrationTableName = "migrations";
     private static DatabaseConfiguration databaseConfiguration;
@@ -40,7 +40,7 @@ public class MigrationManager {
     }
 
     public static void registerSchema(Schema schema) {
-        schemas.put(schema.getTableName(), schema);
+        schemas.add(schema);
     }
 
     public static void execute(DatabaseConnection databaseConnection, Logger logger) {
@@ -51,37 +51,19 @@ public class MigrationManager {
 
         MigrationManager.migrations.forEach(Migration::up);
 
-        if (databaseConfiguration.isDebug()) {
-            logger.info("Schemas: " + schemas.size() + ", Migrations: " + MigrationManager.migrations.size());
-        }
-
-        System.out.println("----");
-        System.out.println();
-        System.out.println(schemas);
-        System.out.println();
-        System.out.println(migrationsFromDatabase);
-        System.out.println();
-        System.out.println("----");
-        schemas.forEach((table, schema) -> {
-            System.out.println(migrationsFromDatabase.contains(schema.getMigration().getClass().getSimpleName()) + " - " + schema.getMigration().getClass().getSimpleName());
+        schemas.forEach(schema -> {
             if (!migrationsFromDatabase.contains(schema.getMigration().getClass().getSimpleName())) {
                 int result;
                 try {
                     result = schema.execute(databaseConnection, logger);
                 } catch (SQLException exception) {
-                    exception.printStackTrace();
-                    result = -1;
-                    // throw new RuntimeException(e);
+                    throw new RuntimeException(exception);
                 }
-                System.out.println();
-                System.out.println(">> " + result + " - " + schema);
-                System.out.println();
                 if (result != -1) {
                     insertMigration(databaseConnection, logger, schema.getMigration());
                 }
             } else {
                 if (!schema.getMigration().isAlter()) {
-                    System.out.println("JE CANCEL ICI !");
                     return;
                 }
 
