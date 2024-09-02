@@ -66,8 +66,13 @@ public class MigrationManager {
                 try {
                     result = schema.execute(databaseConnection, logger);
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    result = -1;
+                    // throw new RuntimeException(e);
                 }
+                System.out.println();
+                System.out.println(">> " + result +" - " + schema);
+                System.out.println();
                 if (result != -1) {
                     insertMigration(databaseConnection, logger, schema.getMigration());
                 }
