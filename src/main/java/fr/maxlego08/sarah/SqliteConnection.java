@@ -25,6 +25,11 @@ public class SqliteConnection extends DatabaseConnection {
             databaseFile.createNewFile();
         }
 
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException ignored) {
+        }
+
         return DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getAbsolutePath());
     }
 
