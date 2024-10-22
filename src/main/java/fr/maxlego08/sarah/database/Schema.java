@@ -76,6 +76,10 @@ public interface Schema {
 
     Schema nullable();
 
+    Schema unique();
+
+    Schema unique(boolean unique);
+
     Schema defaultValue(Object value);
 
     Schema where(String columnName, Object value);
