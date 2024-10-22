@@ -4,6 +4,7 @@ import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.database.DatabaseType;
 
 public class ColumnDefinition {
+
     private String name;
     private String type;
     private int length;
@@ -11,10 +12,10 @@ public class ColumnDefinition {
     private boolean nullable = false;
     private String defaultValue;
     private boolean isPrimaryKey = false;
-    private boolean is = false;
     private String referenceTable;
     private Object object;
     private boolean isAutoIncrement;
+    private boolean unique = false;
 
     public ColumnDefinition(String name, String type) {
         this.name = name;
@@ -48,6 +49,10 @@ public class ColumnDefinition {
 
         if (defaultValue != null) {
             columnSQL.append(" DEFAULT ").append(defaultValue);
+        }
+
+        if (unique) {
+            columnSQL.append(" UNIQUE");
         }
 
         return columnSQL.toString();
@@ -132,12 +137,8 @@ public class ColumnDefinition {
         this.nullable = nullable;
     }
 
-    public boolean isIs() {
-        return is;
-    }
-
-    public void setIs(boolean is) {
-        this.is = is;
+    public void setUnique(boolean unique) {
+        this.unique = unique;
     }
 
     public Object getObject() {

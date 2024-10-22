@@ -310,6 +310,17 @@ public class SchemaBuilder implements Schema {
     }
 
     @Override
+    public Schema unique(boolean unique) {
+        getLastColumn().setUnique(unique);
+        return this;
+    }
+
+    @Override
+    public Schema unique() {
+        return unique(true);
+    }
+
+    @Override
     public Schema defaultValue(Object value) {
         getLastColumn().setDefaultValue(value.toString());
         return this;
