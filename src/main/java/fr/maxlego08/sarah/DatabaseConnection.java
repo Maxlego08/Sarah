@@ -32,6 +32,11 @@ public abstract class DatabaseConnection {
      */
     public boolean isValid() {
 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception ignored) {
+        }
+
         if (!isConnected(connection)) {
             try {
                 Connection temp_connection = this.connectToDatabase();
