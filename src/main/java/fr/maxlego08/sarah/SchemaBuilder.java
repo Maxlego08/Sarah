@@ -506,27 +506,27 @@ public class SchemaBuilder implements Schema {
             String stringValue = value.toString();
             return stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("1");
         } else if (type == Long.class || type == long.class) {
-            return ((Number) value).longValue();
+            return Long.parseLong(value.toString());
         } else if (type == Double.class || type == double.class) {
-            return ((Number) value).doubleValue();
+            return Double.parseDouble(value.toString());
         } else if (type == Integer.class || type == int.class) {
-            return ((Number) value).intValue();
+            return Integer.parseInt(value.toString());
         } else if (Serializable.class.isAssignableFrom(type) && value instanceof byte[]) {
             return deserializeObject((byte[]) value, type);
         } else if (type == Date.class) {
-
             if (value instanceof String) {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date result = null;
                 try {
-                    result = formatter.parse((String) value);
+                    return formatter.parse((String) value);
                 } catch (ParseException exception) {
                     exception.printStackTrace();
+                    return null;
                 }
-                return result;
             }
-            if (value instanceof Number) return new Date(((Number) value).longValue());
-            else return null;
+            if (value instanceof Number) {
+                return new Date(((Number) value).longValue());
+            }
+            return null;
         } else {
             return value;
         }
