@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -525,6 +526,10 @@ public class SchemaBuilder implements Schema {
             }
             if (value instanceof Number) {
                 return new Date(((Number) value).longValue());
+            }
+
+            if (value instanceof Timestamp){
+                return (Date) value;
             }
             return null;
         } else {
